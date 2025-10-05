@@ -5,7 +5,7 @@ const mysql = require('mysql2/promise');
 const logger = require('./middlewares/logger');
 const {testConnection}=require('./config/db');
 const app = express();
-const port = process.env.PORT || 3000;
+const port =3000;
 
 
 const authRoute=require('./module/auth/auth.route');
