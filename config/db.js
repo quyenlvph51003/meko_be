@@ -28,4 +28,3 @@ const dbConfig = {
     testConnection
   }
 
-  //ádasdad

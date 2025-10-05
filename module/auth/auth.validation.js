@@ -56,4 +56,30 @@ const validateRefreshToken = async(req,res,next)=>{
   next();
 }
 
-module.exports={validateRegister,validateLogin,validateRefreshToken}
+const validateRequestOtp=async(req,res,next)=>{
+    const {email}=req.body;
+
+    if(!email){
+        return validationErrorResponse(res,'Email không được để trống');
+    }
+    if(!isValidEmail(email)){
+        return validationErrorResponse(res,'Email không hợp lệ');
+    }
+    next();
+}
+
+const validateVerifyOtp=async(req,res,next)=>{
+    const {email,otp}=req.body;
+    if(!email){
+        return validationErrorResponse(res,'Email không được để trống');
+    }
+    if(!isValidEmail(email)){
+        return validationErrorResponse(res,'Email không hợp lệ');
+    }
+    if(!otp){
+        return validationErrorResponse(res,'Mã OTP không được để trống');
+    }
+    next();
+}
+
+module.exports={validateRegister,validateLogin,validateRefreshToken,validateRequestOtp,validateVerifyOtp}

@@ -16,6 +16,8 @@ testConnection();
 app.use(cors());
 app.use(express.json());
 app.use(logger);
+app.use(express.urlencoded({ extended: true }));
+
 
 
 app.use('/api/auth',authRoute);
@@ -35,5 +37,6 @@ app.listen(port, () => {
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Rejection:', err);
 });
+
 
 module.exports = app;
