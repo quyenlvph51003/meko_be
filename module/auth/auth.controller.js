@@ -10,7 +10,8 @@ const authController={
         
             return successResponse(res,null,'Đăng ký thành công');
         } catch (error) {
-            return serverErrorResponse(res,error);
+            console.log(error);
+            return serverErrorResponse(res);
         }
     },
     
@@ -40,7 +41,9 @@ const authController={
             if(error.message==='PASSWORD_NOT_VALID'){
                 return validationErrorResponse(res,'Mật khẩu không chính xác');
             }
-            return serverErrorResponse(res,error);
+            console.log(error);
+            
+            return serverErrorResponse(res);
         }
     },
 
@@ -49,7 +52,6 @@ const authController={
             const {refreshToken,email}=req.body;
             
             const user=await authService.refreshTokenService(email,refreshToken,res);
-
 
             const token=jwt.sign({email:user.email},process.env.JWT_SECRET,{expiresIn:'2h'});
 
@@ -71,7 +73,48 @@ const authController={
             if(error.message==='INVALID_TOKEN'){
                 return validationErrorResponse(res,'Token không hợp lệ hoặc Email không hợp lệ');
             }
-            return serverErrorResponse(res,error);
+            console.log(error);
+            
+            return serverErrorResponse(res);
+        }
+    },
+
+    async requestOtp(req,res){
+        try {
+            const {email}=req.body;
+            console.log(email);
+            
+            await authService.requestOtpService(email);
+            return successResponse(res,null,'Yêu cầu OTP thành công');
+        } catch (error) {
+            if(error.message==='Email_NOT_FOUND'){
+                return validationErrorResponse(res,'Email không tồn tại');
+            }
+            console.log(error);
+            
+            return serverErrorResponse(res);
+        }
+    },
+    
+    async verifyOtp(req,res){
+        try{
+            const {email,otp}=req.body;
+            await authService.verifyOtpService(email,otp);
+            return successResponse(res,null,'Xác nhận OTP thành công');
+
+        }catch(error){
+            console.log(error);
+            if(error.message==='Email_NOT_FOUND'){
+                return validationErrorResponse(res,'Email không tồn tại');
+            }
+            if(error.message==='OTP_NOT_VALID'){
+                return validationErrorResponse(res,'Mã OTP không hợp lệ');
+            }
+            if(error.message==='OTP_EXPIRED'){
+                return validationErrorResponse(res,'Mã OTP đã hết hạn');
+            }
+
+            return serverErrorResponse(res);
         }
     }
 }
