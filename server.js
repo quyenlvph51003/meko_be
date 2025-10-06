@@ -4,7 +4,11 @@ const cors = require('cors');
 const mysql = require('mysql2/promise');
 const logger = require('./middlewares/logger');
 const {testConnection}=require('./config/db');
+const {notFoundResponse,errorResponse}=require('./utils/response_utils');
+
 const app = express();
+
+
 const port =3000;
 
 
@@ -27,6 +31,16 @@ app.use('/api/auth',authRoute);
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Meko API' });
 });
+
+app.use((req,res,next)=>{
+    notFoundResponse(res,'Đường dẫn api không tồn tại');
+});
+
+app.use((err,req,res,next)=>{
+    console.error(err.stack);
+    errorResponse(res,'Lỗi máy chủ nội bộ',500,err);
+});
+
 
 // Start server
 app.listen(port, () => {

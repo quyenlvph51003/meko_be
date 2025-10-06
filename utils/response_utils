@@ -38,14 +38,13 @@ const errorResponse = (res, message = 'Có lỗi xảy ra', errorCode = 500, dat
  * Validation error response
  * @param {Object} res - Express response object
  * @param {String} message - Validation error message
- * @param {*} errors - Validation errors details
  */
-const validationErrorResponse = (res, message = 'Dữ liệu không hợp lệ', errors = null) => {
+const validationErrorResponse = (res, message = 'Dữ liệu không hợp lệ') => {
     return res.status(400).json({
         datetime: new Date(),
         errorCode: 400,
         message: message,
-        data: errors,
+        data: null,
         success: false
     });
 };
