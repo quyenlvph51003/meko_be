@@ -1,5 +1,5 @@
 const userService=require('./user.service');
-const {successResponse,serverErrorResponse,validationErrorResponse}=require('../../utils/response_utils');
+const {successResponse,serverErrorResponse,validationErrorResponse,notFoundResponse}=require('../../utils/response_utils');
 const bcrypt=require('bcrypt');
 
 const userController={
