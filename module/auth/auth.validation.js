@@ -18,8 +18,8 @@ const validateRegister=async(req,res,next)=>{
         return validationErrorResponse(res, 'Email đã tồn tại');
       }
 
-      if (!password) {
-        return validationErrorResponse(res, 'Mật khẩu không được để trống');
+      if (!password || password.length<6) {
+        return validationErrorResponse(res, 'Mật khẩu không được để trống và phải có ít nhất 6 ký tự');
       }
       if (!username) {
         return validationErrorResponse(res, 'Tên không được để trống');
