@@ -116,6 +116,24 @@ const authController={
 
             return serverErrorResponse(res);
         }
+    },
+
+    async changePassController(req,res){
+        try {
+            const {email,passwordOld,passwordNew}=req.body;
+            await authService.changePassService(email,passwordOld,passwordNew);
+            return successResponse(res,null,'Thay đổi mật khẩu thành công');
+        } catch (error) {
+            if(error.message==='Email_NOT_FOUND'){
+                return validationErrorResponse(res,'Email không tồn tại');
+            }
+            if(error.message==='PASSWORD_NOT_VALID'){
+                return validationErrorResponse(res,'Mật khẩu cũ không chính xác');
+            }
+            
+            console.log(error);
+            return serverErrorResponse(res);
+        }
     }
 }
 

@@ -8,7 +8,7 @@ class UserRepository extends BaseService{
     }
     async findByEmailUserRepo(email){
         return await this.findByEmail(email);
-    }
+    }S
     async findByIdUserRepo(id){
         return await this.findById(id);
     }
@@ -20,6 +20,9 @@ class UserRepository extends BaseService{
     }
     async updateUserRepoById(id,user){
         return await this.updateWhere({id:id},user);
+    }
+    async searchUserRepo(page,size,conditions,orderBy,sort){
+        return await this.paginate(page,size,conditions,orderBy,sort);
     }
 }
 

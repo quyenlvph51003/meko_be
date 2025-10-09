@@ -86,6 +86,21 @@ class AuthService{
         return user;
     }
 
+    async changePassService(email,passwordOld,passwordNew){
+        const user=await AuthRepository.findByEmailAuthRepo(email);
+        if(!user){
+            throw new Error('Email_NOT_FOUND');
+        }
+        const isPasswordValid=await bcrypt.compare(passwordOld,user.password);
+        if(!isPasswordValid){
+            throw new Error('PASSWORD_NOT_VALID');
+        }
+        const hashedPassword = await bcrypt.hash(passwordNew,10);
+        user.password=hashedPassword;
+        await AuthRepository.updateAuthRepo(user);
+        return user;
+    }
+
 }
 
 module.exports=new AuthService();
