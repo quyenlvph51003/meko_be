@@ -23,6 +23,11 @@ class AuthService{
         if(!isPasswordValid){
             throw new Error('PASSWORD_NOT_VALID');
         }
+        console.log(user.is_active);
+        
+        if(user.is_active===0){
+            throw new Error('USER_NOT_ACTIVE');
+        }
         return user;
     }
     
