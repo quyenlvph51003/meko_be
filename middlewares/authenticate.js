@@ -11,7 +11,7 @@ const authenticate = (req, res, next) => {
             return res.status(401).json({ 
                 datetime: new Date(),
                 errorCode: 401,
-                message: 'Không có token',
+                message: 'Token không tồn tại',
                 data: null,
                 success: false
             });

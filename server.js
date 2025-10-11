@@ -14,6 +14,8 @@ const port =3000;
 
 const authRoute=require('./module/auth/auth.route');
 const userRoute=require('./module/users/user.route');
+const provinceRoute=require('./module/address/provinces/province.route');
+const wardRoute=require('./module/address/wards/ward.route');
 testConnection();
 
 // Middleware
@@ -26,8 +28,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth',authRoute);
 app.use('/api/user',userRoute);
-
-
+app.use('/api/province',provinceRoute);
+app.use('/api/ward',wardRoute);
 // Example route
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Meko API' });

@@ -105,10 +105,10 @@ class BaseService {
      * @param {Array} columns - Các cột cần lấy (default: *)
      * @returns {Promise<Object|null>}
      */
-    async findById(id, columns = ['*']) {
+    async findById(id, columns = ['*'], keyColumn = 'id') {
         try {
             const columnStr = columns.join(', ');
-            const query = `SELECT ${columnStr} FROM ${this.tableName} WHERE id = ?`;
+            const query = `SELECT ${columnStr} FROM ${this.tableName} WHERE ${keyColumn} = ?`;
             const [rows] = await pool.query(query, [id]);
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
