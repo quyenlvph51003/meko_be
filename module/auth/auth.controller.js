@@ -41,6 +41,9 @@ const authController={
             if(error.message==='PASSWORD_NOT_VALID'){
                 return validationErrorResponse(res,'Mật khẩu không chính xác');
             }
+            if(error.message==='USER_NOT_ACTIVE'){
+                return validationErrorResponse(res,'Tài khoản của bạn đã bị khoá');
+            }
             console.log(error);
             
             return serverErrorResponse(res);
@@ -114,6 +117,24 @@ const authController={
                 return validationErrorResponse(res,'Mã OTP đã hết hạn');
             }
 
+            return serverErrorResponse(res);
+        }
+    },
+
+    async changePassController(req,res){
+        try {
+            const {email,passwordOld,passwordNew}=req.body;
+            await authService.changePassService(email,passwordOld,passwordNew);
+            return successResponse(res,null,'Thay đổi mật khẩu thành công');
+        } catch (error) {
+            if(error.message==='Email_NOT_FOUND'){
+                return validationErrorResponse(res,'Email không tồn tại');
+            }
+            if(error.message==='PASSWORD_NOT_VALID'){
+                return validationErrorResponse(res,'Mật khẩu cũ không chính xác');
+            }
+            
+            console.log(error);
             return serverErrorResponse(res);
         }
     }

@@ -18,8 +18,8 @@ const validateRegister=async(req,res,next)=>{
         return validationErrorResponse(res, 'Email đã tồn tại');
       }
 
-      if (!password) {
-        return validationErrorResponse(res, 'Mật khẩu không được để trống');
+      if (!password || password.length<6) {
+        return validationErrorResponse(res, 'Mật khẩu không được để trống và phải có ít nhất 6 ký tự');
       }
       if (!username) {
         return validationErrorResponse(res, 'Tên không được để trống');
@@ -82,4 +82,21 @@ const validateVerifyOtp=async(req,res,next)=>{
     next();
 }
 
-module.exports={validateRegister,validateLogin,validateRefreshToken,validateRequestOtp,validateVerifyOtp}
+const validateChangePass=async(req,res,next)=>{
+  const {email,passwordOld,passwordNew}=req.body;
+  if(!email){
+    return validationErrorResponse(res,'Email không được để trống');
+  }
+  if(!isValidEmail(email)){
+    return validationErrorResponse(res,'Email không hợp lệ');
+  }
+  if(!passwordOld){
+    return validationErrorResponse(res,'Mật khẩu cũ không được để trống');
+  }
+  if(!passwordNew){
+    return validationErrorResponse(res,'Mật khẩu mới không được để trống');
+  }
+  next();
+}
+
+module.exports={validateRegister,validateLogin,validateRefreshToken,validateRequestOtp,validateVerifyOtp,validateChangePass}

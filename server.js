@@ -13,7 +13,7 @@ const port =3000;
 
 
 const authRoute=require('./module/auth/auth.route');
-
+const userRoute=require('./module/users/user.route');
 testConnection();
 
 // Middleware
@@ -25,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/api/auth',authRoute);
+app.use('/api/user',userRoute);
 
 
 // Example route

@@ -6,7 +6,8 @@ const {
     validateLogin,
     validateRefreshToken,
     validateRequestOtp,
-    validateVerifyOtp
+    validateVerifyOtp,
+    validateChangePass
 }=require('./auth.validation');
 
 
@@ -15,5 +16,7 @@ router.post('/login',validateLogin,authController.login);
 router.post('/refresh-token',validateRefreshToken,authController.refreshToken);
 router.post('/request-otp',validateRequestOtp,authController.requestOtp);
 router.post('/verify-otp',validateVerifyOtp,authController.verifyOtp);
+router.put('/change-password',validateChangePass,authController.changePassController);
+
 module.exports=router;
 

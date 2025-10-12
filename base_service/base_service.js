@@ -42,26 +42,36 @@ class BaseService {
      * @param {Array} columns - Các cột cần lấy (default: *)
      * @returns {Promise<Object>} - { data, pagination }
      */
-    async paginate(page = 1, limit = 10, conditions = {}, orderBy = 'id DESC', columns = ['*']) {
+    async paginate(page = 0, limit = 10, conditions = {}, orderBy = 'id',sort='DESC', columns = ['*']) {
         try {
-            const offset = (page - 1) * limit;
+            const offset = page * limit;
             const columnStr = columns.join(', ');
             let query = `SELECT ${columnStr} FROM ${this.tableName}`;
             let countQuery = `SELECT COUNT(*) as total FROM ${this.tableName}`;
             const params = [];
 
             // Xây dựng WHERE clause
-            if (Object.keys(conditions).length > 0) {
-                const whereClause = Object.keys(conditions)
-                    .map(key => `${key} = ?`)
-                    .join(' AND ');
-                query += ` WHERE ${whereClause}`;
-                countQuery += ` WHERE ${whereClause}`;
-                params.push(...Object.values(conditions));
+            if (conditions.$or && Array.isArray(conditions.$or)) {
+                const orClauses = conditions.$or
+                    .map(cond => {
+                        const key = Object.keys(cond)[0];
+                        return `LOWER(${key}) LIKE ?`;
+                    })
+                    .join(' OR ');
+                
+                query += ` WHERE ${orClauses}`;
+                countQuery += ` WHERE ${orClauses}`;
+        
+                // ép searchText về chữ thường và thêm wildcard
+                const values = conditions.$or.map(cond => {
+                    const value = Object.values(cond)[0];
+                    return `%${value.toLowerCase()}%`;
+                });
+                params.push(...values);
             }
-
+            
             // Thêm ORDER BY và LIMIT
-            query += ` ORDER BY ${orderBy} LIMIT ? OFFSET ?`;
+            query += ` ORDER BY ${orderBy} ${sort} LIMIT ? OFFSET ?`;
 
             // Lấy tổng số bản ghi
             const [countResult] = await pool.query(countQuery, params);
@@ -74,12 +84,12 @@ class BaseService {
             const totalPages = Math.ceil(total / limit);
 
             return {
-                data: rows,
+                content: rows,
                 pagination: {
                     currentPage: page,
                     totalPages: totalPages,
-                    totalRecords: total,
-                    limit: limit,
+                    totalElements: total,
+                    size: limit,
                     hasNextPage: page < totalPages,
                     hasPrevPage: page > 1
                 }
