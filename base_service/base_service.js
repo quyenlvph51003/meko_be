@@ -187,6 +187,7 @@ class BaseService {
             const query = `INSERT INTO ${this.tableName} (${columns}) VALUES ${placeholders}`;
             
             const [result] = await pool.query(query, values);
+            
             return {
                 insertId: result.insertId,
                 affectedRows: result.affectedRows

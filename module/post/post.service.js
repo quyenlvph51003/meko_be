@@ -5,7 +5,7 @@ const WardRepository=require('../address/wards/ward.repository');
 const ImagePostRepository=require('../image_post/image.repository');
 const PostCategoriesRepository=require('../post_categories/post.categories.repository');
 const Category=require('../category/category.repository');
-
+const {pool}=require('../../config/db');
 
 class PostService{
     async createPost(post){
@@ -73,8 +73,80 @@ class PostService{
 
         return post;
     }
+
+    async getDetailByPostId(postId){
+        const post=await PostRepository.findById(postId);
+        if(!post){
+            throw new Error('Post not found');
+        }
+        return await PostRepository.getDetailByPostId(postId);
+    }
+
+
     async updatePost(post){
-        return await PostRepository.updatePostRepo(post);
+        const postId=post.postId;
+        const title=post.title;
+        const description=post.description;
+        const address=post.address;
+        const price=post.price;
+        const images=post.images;
+        const categories=post.categories;
+        const wardCode=post.wardCode;
+        const provinceCode=post.provinceCode;
+        
+        const postExists=await PostRepository.findById(postId);
+        if(!postExists){
+            throw new Error('Post not found');
+        }
+        const provinceExist=await ProvinceRepository.getProvinceByCode(provinceCode);
+        if(!provinceExist){
+            throw new Error('Province not found');
+        }
+        
+        const wardExist=await WardRepository.getWardByCode(wardCode);
+        if(!wardExist){
+            throw new Error('Ward not found');
+        }
+        const postUpdate={
+            title:title,
+            description:description,
+            address:address,
+            price:price,
+            ward_code:wardCode,
+            province_code:provinceCode
+        }
+
+        // nếu truyền lên request thì xoá và lưu bản ghi mới
+        if(images != undefined){
+            const imageValues = images.map((imageUrl) => ({
+                post_id: postId,
+                image_url: imageUrl
+            }));
+            await ImagePostRepository.deleteImagePost(postId);
+            await ImagePostRepository.createManyImagePost(imageValues);
+        }
+
+        if(categories){
+            for(const id of categories){
+                const categoryExist=await Category.getCategoryRepoById(id);
+                if(!categoryExist){
+                    throw new Error('Category not found');
+                }
+            }
+
+            const postCategoriesValues = categories.map((categoryId) => ({
+                post_id: postId,
+                category_id: categoryId
+            }));
+            console.log(postCategoriesValues);
+            await PostCategoriesRepository.deletePostCategories(postId);
+            await PostCategoriesRepository.createManyPostCategoriesRepo(postCategoriesValues);
+        }
+
+        await PostRepository.updatePostRepo(postUpdate,postId);
+
+        return await this.getDetailByPostId(postId); // trả ra detail
+
     }
 }
 module.exports=new PostService();

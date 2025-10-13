@@ -18,5 +18,8 @@ class CategoriesRepository extends BaseService{
     async getListPostCategoriesRepo(){
         return await this.getAll();
     }
+    async deletePostCategories(postId){
+        return await this.deleteWhere({post_id:postId});
+    }
 }
 module.exports=new CategoriesRepository();

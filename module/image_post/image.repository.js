@@ -18,6 +18,9 @@ class ImagePostRepository extends BaseService{
     async getListImageByPostId(postId){
         return await this.getAll({post_id:postId});
     }
+    async deleteImagePost(postId){
+        return await this.deleteWhere({post_id:postId});
+    }
 }
 
 module.exports=new ImagePostRepository();
