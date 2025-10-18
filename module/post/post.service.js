@@ -43,7 +43,8 @@ class PostService{
             province_code:provinceCode,
             address:post.address,
             price:post.price,
-            expired_at: expiredAtFormatted
+            expired_at: expiredAtFormatted,
+            is_hidden:1
         }
         const postResult=await PostRepository.createPostRepo(postSave);
         if(!postResult) return;

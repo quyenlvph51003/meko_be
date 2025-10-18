@@ -1,5 +1,5 @@
 const stringCommonUtils={
-    queryPostDetail:(postId)=>{
+    queryPostDetail:(condition)=>{
         return `select
                     p.id as id,
                     p.user_id as userId,
@@ -23,7 +23,7 @@ const stringCommonUtils={
                     post_categories pc on p.id = pc.post_id
                 left join 
                     categories c on pc.category_id=c.id
-                where p.id=${postId}
+                where ${condition}
                 GROUP BY 
                     p.id, p.user_id, p.title, p.description, p.price, p.address, 
                     p.is_hidden, p.status, p.expired_at, p.is_pinned, p.created_at, p.updated_at;`

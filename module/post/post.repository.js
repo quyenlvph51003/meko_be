@@ -16,9 +16,16 @@ class PostRepository extends BaseService {
     }
 
     async getDetailByPostId(postId){
-        const query=stringCommonUtils.queryPostDetail(postId);
+        const query=stringCommonUtils.queryPostDetail(`p.id=${postId}`);
         const [result]=await pool.query(query);
         return result[0];
+    }
+    
+    async searchPostRepo(keyword,wardCode,provinceCode,userId,page,limit){
+        //status is_hidden ward_code province_code userId
+        const query=stringCommonUtils.queryPostDetail(`p.title LIKE '%${keyword}%' and p.is_hidden=0 and p.ward_code=${wardCode} and p.province_code=${provinceCode} and p.user_id=${userId}`);
+        const [result]=await pool.query(query);
+        return result;
     }
 
 }

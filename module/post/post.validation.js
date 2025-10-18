@@ -99,5 +99,8 @@ const validationUpdatePost=(req,res,next)=>{
     next();
 }
 
+const validateSearchPost=(req,res,next)=>{
+    
+}
 
-module.exports={validatonCreatePost,validationUpdatePost}
+module.exports={validatonCreatePost,validationUpdatePost,validateSearchPost}

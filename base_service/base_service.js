@@ -99,6 +99,35 @@ class BaseService {
         }
     }
 
+    // dùng cho phân trang phức tạp trả về query 
+    async paginateRawQuery(baseQuery,page=0,limit=10,params=[]){
+        try {
+            const offset = page * limit;
+            const countQuery = `SELECT COUNT(*) as total FROM (${baseQuery}) as subQuery`;
+            const [countResult] = await pool.query(countQuery, params);
+            const total = countResult[0].total;
+
+            const totalPages = Math.ceil(total / limit);
+
+            const query = baseQuery + ` LIMIT ? OFFSET ?`;
+            const [rows] = await pool.query(query, [...params, limit, offset]);
+            return {
+                content: rows,
+                pagination: {
+                    currentPage: page,
+                    totalPages: totalPages,
+                    totalElements: total,
+                    size: limit,
+                    hasNextPage: page < totalPages,
+                    hasPrevPage: page > 1
+                }
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
     /**
      * Tìm bản ghi theo ID
      * @param {Number} id - ID của bản ghi
