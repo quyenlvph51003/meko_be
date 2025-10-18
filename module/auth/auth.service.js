@@ -60,11 +60,15 @@ class AuthService{
         }
 
         const transporter= nodemailer.createTransport({
-            service:'gmail',
+            host:'smtp.gmail.com',
+            port:465,  /// hoặc 587 nếu muốn dùng STARTTLS
+            secure:true, // true nếu port là 465, false nếu port là 587
             auth:{
                 user: process.env.EMAIL,
                 pass: process.env.PASS_EMAIL
-            }
+            },
+            connectionTimeout: 10000,
+        
         })
 
         await transporter.sendMail(mailOptions);

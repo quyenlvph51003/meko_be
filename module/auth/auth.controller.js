@@ -94,7 +94,6 @@ const authController={
                 return validationErrorResponse(res,'Email không tồn tại');
             }
             console.log(error);
-            
             return serverErrorResponse(res);
         }
     },
