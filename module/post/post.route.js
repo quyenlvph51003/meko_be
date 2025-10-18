@@ -1,11 +1,11 @@
-const express=require('express');
+import express from 'express';
 const router=express.Router();
-const {createPostController,getDetailByPostIdController,updatePostByIdController}=require('./post.controller');
-const {validatonCreatePost,validationUpdatePost}=require('./post.validation');
-const {authenticate}=require('../../middlewares/authenticate');
-const upload=require('../../utils/upload_cloudinary');
+import PostController from './post.controller.js';
+import PostValidation from './post.validation.js';
+import Middleware from '../../middlewares/authenticate.js';
+import upload from '../../utils/upload_cloudinary.js';
 
-router.post('/create',authenticate,upload.array('images'),validatonCreatePost,createPostController);
-router.get('/detail/:postId',getDetailByPostIdController);
-router.put('/update',authenticate,upload.array('images'),validationUpdatePost,updatePostByIdController);
-module.exports=router;
+router.post('/create',Middleware.authenticate,upload.array('images'),PostValidation.validatonCreatePost,PostController.createPostController);
+router.get('/detail/:postId',PostController.getDetailByPostIdController);
+router.put('/update',Middleware.authenticate,upload.array('images'),PostValidation.validationUpdatePost,PostController.updatePostByIdController);
+export default router;

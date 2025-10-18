@@ -1,11 +1,10 @@
-const PostRepository=require('./post.repository');
-const UserRepository=require('../users/user.repository');
-const ProvinceRepository=require('../address/provinces/province.repository');
-const WardRepository=require('../address/wards/ward.repository');
-const ImagePostRepository=require('../image_post/image.repository');
-const PostCategoriesRepository=require('../post_categories/post.categories.repository');
-const Category=require('../category/category.repository');
-const {pool}=require('../../config/db');
+import PostRepository from './post.repository.js';
+import UserRepository from '../users/user.repository.js';
+import ProvinceRepository from '../address/provinces/province.repository.js';
+import WardRepository from '../address/wards/ward.repository.js';
+import ImagePostRepository from '../image_post/image.repository.js';
+import PostCategoriesRepository from '../post_categories/post.categories.repository.js';
+import Category from '../category/category.repository.js';
 
 class PostService{
     async createPost(post){
@@ -71,7 +70,6 @@ class PostService{
             }));
             await PostCategoriesRepository.createManyPostCategoriesRepo(postCategoriesValues);
         }
-
         return post;
     }
 
@@ -150,4 +148,4 @@ class PostService{
 
     }
 }
-module.exports=new PostService();
+export default new PostService();

@@ -1,9 +1,9 @@
-const express=require('express');
+import express from 'express';
 const router=express.Router();
-const wardController=require('../wards/ward.controller');
-const authMiddleware=require('../../../middlewares/authenticate');
+import wardController from '../wards/ward.controller.js';
+import authMiddleware from '../../../middlewares/authenticate.js';
 
 router.get('/get-all',authMiddleware.authenticate,wardController.getWards);
 router.get('/get-by-code/:code',authMiddleware.authenticate,wardController.getWardByCode);
 router.get('/get-by-province-code',authMiddleware.authenticate,wardController.getWardsByProvinceCode);
-module.exports=router;
+export default router;

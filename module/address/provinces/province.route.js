@@ -1,8 +1,8 @@
-const express=require('express');
-const router=express.Router();
-const provinceController=require('../provinces/province.controller');
-const authMiddleware=require('../../../middlewares/authenticate');
+import express from 'express';
+const router=express.Router();  
+import provinceController from '../provinces/province.controller.js';
+import authMiddleware from '../../../middlewares/authenticate.js';
 
 router.get('/get-all',authMiddleware.authenticate,provinceController.getProvinces);
 router.get('/get-by-code/:code',authMiddleware.authenticate,provinceController.getProvinceByCode);
-module.exports=router;
+export default router;

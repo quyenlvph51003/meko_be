@@ -1,5 +1,4 @@
-const jwt = require('jsonwebtoken');
-
+import jwt from 'jsonwebtoken';
 
 //authenticate
 const authenticate = (req, res, next) => {
@@ -22,7 +21,6 @@ const authenticate = (req, res, next) => {
         
         // Gắn thông tin user vào request
         req.user = decoded;
-        
         next();
     } catch (error) {
         if (error.name === 'JsonWebTokenError') {
@@ -100,4 +98,4 @@ const authorize = (roles = []) => {
 };
 
 
-module.exports = {authenticate,authorize};
+export default {authenticate,authorize};

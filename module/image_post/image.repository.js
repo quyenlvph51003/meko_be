@@ -1,4 +1,4 @@
-const BaseService=require('../../base_service/base_service');
+import BaseService from '../../base_service/base_service.js';
 class ImagePostRepository extends BaseService{
     constructor(){
         super('image_post');
@@ -23,4 +23,4 @@ class ImagePostRepository extends BaseService{
     }
 }
 
-module.exports=new ImagePostRepository();
+export default new ImagePostRepository();

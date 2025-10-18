@@ -1,11 +1,11 @@
-const express=require('express');
+import express from 'express';
 const router=express.Router();
-const {createCategoryController,updateCategoryController,getDetailCategoryController,getListCategoryController}=require('./category.controller');
-const {authenticate}=require('../../middlewares/authenticate');
-const upload=require('../../utils/upload_cloudinary');
+import CategoryController from './category.controller.js';
+import Middleware from '../../middlewares/authenticate.js';
+import upload from '../../utils/upload_cloudinary.js';
 
-router.post('/create',authenticate,upload.single('avatar'),createCategoryController);
-router.put('/update/:id',authenticate,upload.single('avatar'),updateCategoryController);
-router.get('/detail/:id',getDetailCategoryController);
-router.get('/list',getListCategoryController);
-module.exports=router;
+router.post('/create',Middleware.authenticate,upload.single('avatar'),CategoryController.createCategoryController);
+router.put('/update/:id',Middleware.authenticate,upload.single('avatar'),CategoryController.updateCategoryController);
+router.get('/detail/:id',CategoryController.getDetailCategoryController);
+router.get('/list',CategoryController.getListCategoryController);
+export default router;

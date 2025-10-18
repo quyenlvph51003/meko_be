@@ -1,4 +1,4 @@
-const BaseService=require('../../base_service/base_service');
+import BaseService from '../../base_service/base_service.js';
 class CategoryRepository extends BaseService{
     constructor(){
         super('categories');
@@ -22,4 +22,4 @@ class CategoryRepository extends BaseService{
     }
 }
 
-module.exports=new CategoryRepository();
+export default new CategoryRepository();

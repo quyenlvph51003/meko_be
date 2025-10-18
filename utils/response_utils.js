@@ -110,7 +110,7 @@ const serverErrorResponse = (res, message = 'Lỗi hệ thống, vui lòng liên
     });
 };
 
-module.exports = {
+export default {
     successResponse,
     errorResponse,
     validationErrorResponse,

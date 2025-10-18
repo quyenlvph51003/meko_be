@@ -29,4 +29,4 @@ const stringCommonUtils={
                     p.is_hidden, p.status, p.expired_at, p.is_pinned, p.created_at, p.updated_at;`
     }
 }
-module.exports=stringCommonUtils;
+export default stringCommonUtils;

@@ -1,4 +1,4 @@
-const WardRepository=require('./ward.repository');
+import WardRepository from './ward.repository.js';
 class WardService{
     async getWards(){
         return await WardRepository.getWards();
@@ -15,4 +15,4 @@ class WardService{
         return await WardRepository.getWardsByProvinceCode(provinceCode);
     }
 }
-module.exports=new WardService();
+export default new WardService();

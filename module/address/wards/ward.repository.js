@@ -1,4 +1,4 @@
-const repository=require('../../../base_service/base_service');
+import repository from '../../../base_service/base_service.js';
 
 class WardRepository extends repository{
     constructor(){
@@ -14,4 +14,4 @@ class WardRepository extends repository{
         return await this.getAll({province_code:provinceCode});
     }
 }
-module.exports=new WardRepository();
+export default new WardRepository();

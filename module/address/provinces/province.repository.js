@@ -1,5 +1,5 @@
 
-const BaseService = require('../../../base_service/base_service');
+import BaseService from '../../../base_service/base_service.js';
 
 class ProvinceRepository extends BaseService{
     constructor(){
@@ -12,4 +12,4 @@ class ProvinceRepository extends BaseService{
         return await this.findById(code,['*'],'code');
     }
 }
-module.exports=new ProvinceRepository();    
+export default new ProvinceRepository();    

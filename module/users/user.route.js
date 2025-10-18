@@ -1,12 +1,12 @@
-const express=require('express');
+import express from 'express';
 const router=express.Router();
-const {createUserValidation,updateUserValidation,searchUserValidation}=require('./user.validation');
-const userController=require('./user.controller');
-const upload=require('../../utils/upload_cloudinary');
+import UserValidation from './user.validation.js';
+import userController from './user.controller.js';
+import upload from '../../utils/upload_cloudinary.js';
 
-router.post('/create',createUserValidation,userController.createUser);
+router.post('/create',UserValidation.createUserValidation,userController.createUser);
 router.get('/detail/:id',userController.getDetailUser);
 router.put('/upload-avatar/:id',upload.single('avatar'),userController.uploadAvatar);
-router.put('/update-user',updateUserValidation,userController.updateUserController);
-router.get('/search',searchUserValidation,userController.searchUserController);
-module.exports=router;
+router.put('/update-user',UserValidation.updateUserValidation,userController.updateUserController);
+router.get('/search',UserValidation.searchUserValidation,userController.searchUserController);
+export default router;

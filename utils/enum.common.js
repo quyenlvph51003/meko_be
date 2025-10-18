@@ -6,4 +6,4 @@ const PostStatus=Object.freeze({
     DELETED:'DELETED'
 })
 
-module.exports={PostStatus}
+export default {PostStatus}

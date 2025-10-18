@@ -1,6 +1,6 @@
-const authService=require('./auth.service');
-const jwt=require('jsonwebtoken');
-const {successResponse,serverErrorResponse,validationErrorResponse}=require('../../utils/response_utils');
+import authService from './auth.service.js';
+import jwt from 'jsonwebtoken';
+import ResponseUtils from '../../utils/response_utils.js';
 
 const authController={
     async register(req,res){
@@ -8,10 +8,10 @@ const authController={
             const {email,password,username}=req.body;
             const user=await authService.register({email,password,username,res});
         
-            return successResponse(res,null,'Đăng ký thành công');
+            return ResponseUtils.successResponse(res,null,'Đăng ký thành công');
         } catch (error) {
             console.log(error);
-            return serverErrorResponse(res);
+            return ResponseUtils.serverErrorResponse(res);
         }
     },
     
@@ -27,7 +27,7 @@ const authController={
             
             await authService.updateWhereService(user);
             
-            return successResponse(res,{
+            return ResponseUtils.successResponse(res,{
                 'token': token,
                 'refreshToken': user.refresh_token,
                 'tokenExpired': user.token_expired,
@@ -36,17 +36,17 @@ const authController={
             },'Đăng nhập thành công');
         } catch (error) {
             if(error.message==='Email_NOT_FOUND'){
-                return validationErrorResponse(res,'Email không tồn tại');
+                return ResponseUtils.validationErrorResponse(res,'Email không tồn tại');
             }
             if(error.message==='PASSWORD_NOT_VALID'){
-                return validationErrorResponse(res,'Mật khẩu không chính xác');
+                return ResponseUtils.validationErrorResponse(res,'Mật khẩu không chính xác');
             }
             if(error.message==='USER_NOT_ACTIVE'){
-                return validationErrorResponse(res,'Tài khoản của bạn đã bị khoá');
+                return ResponseUtils.validationErrorResponse(res,'Tài khoản của bạn đã bị khoá');
             }
             console.log(error);
             
-            return serverErrorResponse(res);
+            return ResponseUtils.serverErrorResponse(res);
         }
     },
 
@@ -64,7 +64,7 @@ const authController={
             
             await authService.updateWhereService(user);
             
-            return successResponse(res,{
+            return ResponseUtils.successResponse(res,{
                 'token': token,
                 'refreshToken': user.refresh_token,
                 'tokenExpired': user.token_expired,
@@ -74,11 +74,11 @@ const authController={
             
         }catch(error){
             if(error.message==='INVALID_TOKEN'){
-                return validationErrorResponse(res,'Token không hợp lệ hoặc Email không hợp lệ');
+                return ResponseUtils.validationErrorResponse(res,'Token không hợp lệ hoặc Email không hợp lệ');
             }
             console.log(error);
             
-            return serverErrorResponse(res);
+            return ResponseUtils.serverErrorResponse(res);
         }
     },
 
@@ -88,13 +88,13 @@ const authController={
             console.log(email);
             
             await authService.requestOtpService(email);
-            return successResponse(res,null,'Yêu cầu OTP thành công');
+            return ResponseUtils.successResponse(res,null,'Yêu cầu OTP thành công');
         } catch (error) {
             if(error.message==='Email_NOT_FOUND'){
-                return validationErrorResponse(res,'Email không tồn tại');
+                return ResponseUtils.validationErrorResponse(res,'Email không tồn tại');
             }
             console.log(error);
-            return serverErrorResponse(res);
+            return ResponseUtils.serverErrorResponse(res);
         }
     },
     
@@ -102,21 +102,21 @@ const authController={
         try{
             const {email,otp}=req.body;
             await authService.verifyOtpService(email,otp);
-            return successResponse(res,null,'Xác nhận OTP thành công');
+            return ResponseUtils.successResponse(res,null,'Xác nhận OTP thành công');
 
         }catch(error){
-            console.log(error);
             if(error.message==='Email_NOT_FOUND'){
-                return validationErrorResponse(res,'Email không tồn tại');
+                return ResponseUtils.validationErrorResponse(res,'Email không tồn tại');
             }
             if(error.message==='OTP_NOT_VALID'){
-                return validationErrorResponse(res,'Mã OTP không hợp lệ');
+                return ResponseUtils.validationErrorResponse(res,'Mã OTP không hợp lệ');
             }
             if(error.message==='OTP_EXPIRED'){
-                return validationErrorResponse(res,'Mã OTP đã hết hạn');
+                return ResponseUtils.validationErrorResponse(res,'Mã OTP đã hết hạn');
             }
+            console.log(error);
 
-            return serverErrorResponse(res);
+            return ResponseUtils.serverErrorResponse(res);
         }
     },
 
@@ -124,19 +124,19 @@ const authController={
         try {
             const {email,passwordOld,passwordNew}=req.body;
             await authService.changePassService(email,passwordOld,passwordNew);
-            return successResponse(res,null,'Thay đổi mật khẩu thành công');
+            return ResponseUtils.successResponse(res,null,'Thay đổi mật khẩu thành công');
         } catch (error) {
             if(error.message==='Email_NOT_FOUND'){
-                return validationErrorResponse(res,'Email không tồn tại');
+                return ResponseUtils.validationErrorResponse(res,'Email không tồn tại');
             }
             if(error.message==='PASSWORD_NOT_VALID'){
-                return validationErrorResponse(res,'Mật khẩu cũ không chính xác');
+                return ResponseUtils.validationErrorResponse(res,'Mật khẩu cũ không chính xác');
             }
             
             console.log(error);
-            return serverErrorResponse(res);
+            return ResponseUtils.serverErrorResponse(res);
         }
     }
 }
 
-module.exports=authController;
+export default authController;

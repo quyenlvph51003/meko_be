@@ -1,10 +1,10 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const mysql = require('mysql2/promise');
-const logger = require('./middlewares/logger');
-const {testConnection}=require('./config/db');
-const {notFoundResponse,errorResponse}=require('./utils/response_utils');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import mysql from 'mysql2/promise';
+import logger from './middlewares/logger.js';
+import testConnection from './config/db.js';
+import response_utils from './utils/response_utils.js';
 
 const app = express();
 
@@ -12,13 +12,13 @@ const app = express();
 const port =3000;
 
 
-const authRoute=require('./module/auth/auth.route');
-const userRoute=require('./module/users/user.route');
-const provinceRoute=require('./module/address/provinces/province.route');
-const wardRoute=require('./module/address/wards/ward.route');
-const postRoute=require('./module/post/post.route');
-const categoryRoute=require('./module/category/category.route');  
-testConnection();
+import authRoute from './module/auth/auth.route.js';
+import userRoute from './module/users/user.route.js';
+import provinceRoute from './module/address/provinces/province.route.js';
+import wardRoute from './module/address/wards/ward.route.js';
+import postRoute from './module/post/post.route.js';
+import categoryRoute from './module/category/category.route.js';  
+testConnection.testConnection();
 
 // Middleware
 app.use(cors());
@@ -40,12 +40,12 @@ app.get('/', (req, res) => {
 });
 
 app.use((req,res,next)=>{
-    notFoundResponse(res,'Đường dẫn api không tồn tại');
+    response_utils.notFoundResponse(res,'Đường dẫn api không tồn tại');
 });
 
 app.use((err,req,res,next)=>{
     console.error(err.stack);
-    errorResponse(res,'Lỗi máy chủ nội bộ',500,err);
+    response_utils.errorResponse(res,'Lỗi máy chủ nội bộ',500,err);
 });
 
 
@@ -59,5 +59,4 @@ process.on('unhandledRejection', (err) => {
   console.error('Unhandled Rejection:', err);
 });
 
-
-module.exports = app;
+export default app;

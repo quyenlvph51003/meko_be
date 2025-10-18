@@ -1,4 +1,4 @@
-const BaseService=require('../../base_service/base_service');
+import BaseService from '../../base_service/base_service.js';
 class CategoriesRepository extends BaseService{
     constructor(){
         super('post_categories');
@@ -22,4 +22,4 @@ class CategoriesRepository extends BaseService{
         return await this.deleteWhere({post_id:postId});
     }
 }
-module.exports=new CategoriesRepository();
+export default new CategoriesRepository();

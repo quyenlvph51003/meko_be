@@ -1,4 +1,4 @@
-const CategoriesRepository=require('../category/category.repository');
+import CategoriesRepository from '../category/category.repository.js';
 
 class CategoryService{
     async createCategoryService(categories){
@@ -15,4 +15,4 @@ class CategoryService{
     }
 }
 
-module.exports=new CategoryService();
+export default new CategoryService();

@@ -1,4 +1,4 @@
-const ProvinceRepository=require('./province.repository');
+import ProvinceRepository from './province.repository.js';
 
 class ProvinceService{
     async getProvinces(){
@@ -12,4 +12,4 @@ class ProvinceService{
         return province;
     }
 }
-module.exports=new ProvinceService();
+export default new ProvinceService();

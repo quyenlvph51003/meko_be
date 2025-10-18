@@ -1,7 +1,6 @@
-const BaseService = require("../../base_service/base_service");
-const {pool}=require('../../config/db');
-const stringCommonUtils=require('../../utils/string_common_utils');
-
+import BaseService from "../../base_service/base_service.js";
+import database from '../../config/db.js';
+import stringCommonUtils from '../../utils/string_common_utils.js';
 class PostRepository extends BaseService {
     constructor() {
         super("post");
@@ -17,17 +16,17 @@ class PostRepository extends BaseService {
 
     async getDetailByPostId(postId){
         const query=stringCommonUtils.queryPostDetail(`p.id=${postId}`);
-        const [result]=await pool.query(query);
+        const [result]=await database.pool.query(query);
         return result[0];
     }
     
     async searchPostRepo(keyword,wardCode,provinceCode,userId,page,limit){
         //status is_hidden ward_code province_code userId
         const query=stringCommonUtils.queryPostDetail(`p.title LIKE '%${keyword}%' and p.is_hidden=0 and p.ward_code=${wardCode} and p.province_code=${provinceCode} and p.user_id=${userId}`);
-        const [result]=await pool.query(query);
+        const [result]=await database.pool.query(query);
         return result;
     }
 
 }
 
-module.exports=new PostRepository();
+export default new PostRepository();
