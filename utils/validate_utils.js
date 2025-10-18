@@ -4,7 +4,7 @@ function isValidEmail(email) {
     return regex.test(email);
   }
   
-  export default { isValidEmail };
+  export default { isValidEmail };  
   
 
   //dsad

@@ -106,15 +106,12 @@ class AuthService{
         user.otp_expired=new Date(Date.now()+3*60*1000);
         
         await AuthRepository.updateAuthRepo(user);
-        console.log(user);
         
         return user;
     }
 
     async verifyOtpService(email,otp){
         const user=await AuthRepository.findByEmailAuthRepo(email);
-        console.log(user);
-        console.log(otp);
         
         if(!user){
             throw new Error('Email_NOT_FOUND');
