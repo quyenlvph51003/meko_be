@@ -1,6 +1,6 @@
-const {CloudinaryStorage}=require('multer-storage-cloudinary');
-const multer=require('multer');
-const cloudinary=require('../config/cloundinary');
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import multer from 'multer';
+import cloudinary from '../config/cloundinary.js';
 const storage=new CloudinaryStorage({
     cloudinary:cloudinary,
     params:{
@@ -8,5 +8,5 @@ const storage=new CloudinaryStorage({
         allowed_formats:['jpg','png','jpeg','gif']
     }
 })
-const upload=multer({storage});
-module.exports=upload;
+const upload=multer({storage}); 
+export default upload;

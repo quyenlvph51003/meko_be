@@ -1,5 +1,5 @@
 
-const UserRepository = require('./user.repository');
+import UserRepository from './user.repository.js';
 function escapeRegex(text) {
     return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // escape regex special chars
   }
@@ -36,4 +36,4 @@ class UserService{
 
 }
 
-module.exports=new UserService();
+export default new UserService();

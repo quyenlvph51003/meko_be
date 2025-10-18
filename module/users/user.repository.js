@@ -1,6 +1,4 @@
-const BaseService = require('../../base_service/base_service');
-const {pool}=require('../../config/db');
-
+import BaseService from '../../base_service/base_service.js';
 
 class UserRepository extends BaseService{
     constructor(){
@@ -26,4 +24,4 @@ class UserRepository extends BaseService{
     }
 }
 
-module.exports=new UserRepository();
+export default new UserRepository();
