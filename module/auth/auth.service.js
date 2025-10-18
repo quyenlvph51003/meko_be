@@ -114,6 +114,7 @@ class AuthService{
     async verifyOtpService(email,otp){
         const user=await AuthRepository.findByEmailAuthRepo(email);
         console.log(user);
+        console.log(otp);
         
         if(!user){
             throw new Error('Email_NOT_FOUND');
