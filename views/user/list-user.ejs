@@ -7,8 +7,7 @@ content: `
             <div class="card card-custom gutter-b">
                 <div class="card-header flex-wrap border-0 pt-6 pb-0">
                     <div class="card-title">
-                        <h3 class="card-label">Scrollable Table
-                        <span class="d-block text-muted pt-2 font-size-sm">scrollable datatable with fixed height</span></h3>
+                        <h3 class="card-label">Danh sách người dùng</h3>
                     </div>
                     <div class="card-toolbar">
                         <!--begin::Dropdown-->
@@ -27,25 +26,11 @@ content: `
                             </span>Export Excel</button>
                         </div>
                         <!--end::Dropdown-->
-                        <!--begin::Button-->
-                        <a href="#" class="btn btn-primary font-weight-bolder">
-                        <span class="svg-icon svg-icon-md">
-                            <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
-                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                    <rect x="0" y="0" width="24" height="24" />
-                                    <circle fill="#000000" cx="9" cy="15" r="6" />
-                                    <path d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z" fill="#000000" opacity="0.3" />
-                                </g>
-                            </svg>
-                            <!--end::Svg Icon-->
-                        </span>New Record</a>
-                        <!--end::Button-->
                     </div>
                 </div>
                 <div class="card-body">
                     <!--begin: Datatable-->
-                    <table class="table table-separate table-head-custom table-checkable" id="kt_datatable1">
+                    <table class="table table-hover table-separate table-head-custom table-checkable" id="kt_datatable1">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -65,6 +50,40 @@ content: `
                         </tbody>
                     </table>
                     <!--end: Datatable-->
+                    <!-- Phân trang -->
+                    <div class="row mt-4">
+                        <div class="col-12 col-md-4 mb-2 mb-md-0">
+                            <div class="d-flex align-items-center">
+                                <span class="mr-2">Hiển thị:</span>
+                                <select id="page-size-selector" class="form-control form-control-sm"
+                                    style="width: auto;">
+                                    <option value="10">10</option>
+                                    <option value="20" selected>20</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                                <span class="ml-2">bản ghi</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 mb-2 mb-md-0 text-center">
+                            <div class="pagination-info">
+                                <span id="pagination-text">Hiển thị 1-20 của 0 bản ghi</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 text-right">
+                            <div class="pagination-controls">
+                                <button id="prev-page" class="btn btn-sm btn-outline-secondary" disabled>
+                                    <i class="la la-angle-left"></i> Trước
+                                </button>
+                                <span class="mx-2">
+                                    <span id="current-page">1</span> / <span id="total-pages">1</span>
+                                </span>
+                                <button id="next-page" class="btn btn-sm btn-outline-secondary" disabled>
+                                    Sau <i class="la la-angle-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!--end::Card-->
