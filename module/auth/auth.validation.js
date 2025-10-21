@@ -82,6 +82,7 @@ const validateVerifyOtp=async(req,res,next)=>{
     next();
 }
 
+//dasd
 const validateChangePass=async(req,res,next)=>{
   const {email,passwordOld,passwordNew}=req.body;
   if(!email){
@@ -100,3 +101,4 @@ const validateChangePass=async(req,res,next)=>{
 }
 
 export default {validateRegister,validateLogin,validateRefreshToken,validateRequestOtp,validateVerifyOtp,validateChangePass}
+

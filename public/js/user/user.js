@@ -52,7 +52,7 @@ function loadUsers(page = 0, size = pageSize) {
                         <td>${updatedAt}</td>
                         <td style="text-align: center;padding-left:0;">
                             <span class="svg-icon svg-icon-primary svg-icon-2x"><!--begin::Svg Icon | path:C:\wamp64\www\keenthemes\themes\metronic\theme\html\demo1\dist/../src/media/svg/icons\Communication\Write.svg-->
-                                <svg style="width: 36px !important;height: 36px !important;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                <svg class="btn-edit-user" style="cursor: pointer; width: 36px !important;height: 36px !important;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
                                     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                         <rect x="0" y="0" width="24" height="24"/>
                                         <path d="M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z" fill="#000000" fill-rule="nonzero" transform="translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953) "/>
@@ -103,6 +103,94 @@ $('#page-size-selector').on('change', function() {
 
 $(document).ready(function() {
     loadUsers();
+
+    $('.btn-add-user').on('click', function() {
+        const htmlAdd = `
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm người dùng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i aria-hidden="true" class="ki ki-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" name="username" class="form-control" placeholder="Nhập username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" name="email" class="form-control" placeholder="Nhập email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password:</label>
+                        <input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role:</label>
+                        <select name="role" class="form-control" required>
+                            <option value="">-- Chọn vai trò --</option>
+                            <option value="0">User</option>
+                            <option value="1">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ:</label>
+                        <input type="text" name="address_name" class="form-control" placeholder="Nhập địa chỉ">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-primary" data-dismiss="modal">Huỷ</button>
+                <button type="button" class="btn btn-primary btn-save-add">Thêm</button>
+            </div>
+        `;
+        $('#modalContent').html(htmlAdd);
+        $('#exampleModalCenter').modal('show');
+    });
+
+    // Khi click "Sửa" (ví dụ)
+    $(document).on('click', '.btn-edit-user', function() {
+        const userId = $(this).data('id');
+        const htmlEdit = `
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa thông tin người dùng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i aria-hidden="true" class="ki ki-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" name="username" class="form-control" placeholder="Nhập username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" name="email" class="form-control" placeholder="Nhập email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role:</label>
+                        <select name="role" class="form-control" required>
+                            <option value="">-- Chọn vai trò --</option>
+                            <option value="0">User</option>
+                            <option value="1">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ:</label>
+                        <input type="text" name="address_name" class="form-control" placeholder="Nhập địa chỉ">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-primary" data-dismiss="modal">Huỷ</button>
+                <button type="button" class="btn btn-primary btn-save-add">Lưu</button>
+            </div>
+        `;
+        $('#modalContent').html(htmlEdit);
+        $('#exampleModalCenter').modal('show');
+    });
 });
 
 
