@@ -1,0 +1,101 @@
+<%- include('../master', { title: 'Danh sách người dùng',
+content: `
+    <div class="d-flex flex-column-fluid">
+        <!--begin::Container-->
+        <div class="container" style="max-width: 2400px;">
+            <!--begin::Card-->
+            <div class="card card-custom gutter-b">
+                <div class="card-header flex-wrap border-0 pt-6 pb-0">
+                    <div class="card-title">
+                        <h3 class="card-label">Danh sách người dùng</h3>
+                    </div>
+                    <div class="card-toolbar">
+                        <!--begin::Dropdown-->
+                        <div class="dropdown dropdown-inline mr-2">
+                            <button type="button" class="btn btn-light-primary font-weight-bolder dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="svg-icon svg-icon-md"></span>Xuất Excel
+                            </button>
+                            <button type="button" class="btn-add-user btn btn-primary font-weight-bolder">
+                                <span class="svg-icon svg-icon-md"></span>Thêm mới
+                            </button>
+                        </div>
+                        <!--end::Dropdown-->
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!--begin: Datatable-->
+                    <table class="table table-hover table-separate table-head-custom table-checkable" id="kt_datatable1">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Ảnh đại diện</th>
+                                <th>Tên người dùng</th>
+                                <th>Email</th>
+                                <th>Địa chỉ</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tạo</th>
+                                <th>Ngày cập nhật</th>
+                                <th style="width: 100px;padding-left:0;text-align: center;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kt_datatable1_body">
+                            
+                        </tbody>
+                    </table>
+                    <!--end: Datatable-->
+                    <!-- Phân trang -->
+                    <div class="row mt-4">
+                        <div class="col-12 col-md-4 mb-2 mb-md-0">
+                            <div class="d-flex align-items-center">
+                                <span class="mr-2">Hiển thị:</span>
+                                <select id="page-size-selector" class="form-control form-control-sm"
+                                    style="width: auto;">
+                                    <option value="10">10</option>
+                                    <option value="20" selected>20</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                                <span class="ml-2">bản ghi</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 mb-2 mb-md-0 text-center">
+                            <div class="pagination-info">
+                                <span id="pagination-text">Hiển thị 1-20 của 0 bản ghi</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 text-right">
+                            <div class="pagination-controls">
+                                <button id="prev-page" class="btn btn-sm btn-outline-secondary" disabled>
+                                    <i class="la la-angle-left"></i> Trước
+                                </button>
+                                <span class="mx-2">
+                                    <span id="current-page">1</span> / <span id="total-pages">1</span>
+                                </span>
+                                <button id="next-page" class="btn btn-sm btn-outline-secondary" disabled>
+                                    Sau <i class="la la-angle-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Card-->
+        </div>
+        <!--end::Container-->
+    </div>
+    
+    <!-- Button trigger modal-->
+
+    <!-- Modal-->
+    <div class="modal fade" id="exampleModalCenter" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" id="modalContent">
+                
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="/js/user/user.js"></script>
+` 
+}) %>

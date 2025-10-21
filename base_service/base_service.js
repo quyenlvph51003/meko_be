@@ -1,5 +1,4 @@
-const { pool } = require('../config/db');
-
+import database from '../config/db.js';
 class BaseService {
     constructor(tableName) {
         this.tableName = tableName;
@@ -26,7 +25,7 @@ class BaseService {
                 params.push(...Object.values(conditions));
             }
 
-            const [rows] = await pool.query(query, params);
+            const [rows] = await database.pool.query(query, params);
             return rows;
         } catch (error) {
             throw error;
@@ -42,44 +41,54 @@ class BaseService {
      * @param {Array} columns - Các cột cần lấy (default: *)
      * @returns {Promise<Object>} - { data, pagination }
      */
-    async paginate(page = 1, limit = 10, conditions = {}, orderBy = 'id DESC', columns = ['*']) {
+    async paginate(page = 0, limit = 10, conditions = {}, orderBy = 'id',sort='DESC', columns = ['*']) {
         try {
-            const offset = (page - 1) * limit;
+            const offset = page * limit;
             const columnStr = columns.join(', ');
             let query = `SELECT ${columnStr} FROM ${this.tableName}`;
             let countQuery = `SELECT COUNT(*) as total FROM ${this.tableName}`;
             const params = [];
 
             // Xây dựng WHERE clause
-            if (Object.keys(conditions).length > 0) {
-                const whereClause = Object.keys(conditions)
-                    .map(key => `${key} = ?`)
-                    .join(' AND ');
-                query += ` WHERE ${whereClause}`;
-                countQuery += ` WHERE ${whereClause}`;
-                params.push(...Object.values(conditions));
+            if (conditions.$or && Array.isArray(conditions.$or)) {
+                const orClauses = conditions.$or
+                    .map(cond => {
+                        const key = Object.keys(cond)[0];
+                        return `LOWER(${key}) LIKE ?`;
+                    })
+                    .join(' OR ');
+                
+                query += ` WHERE ${orClauses}`;
+                countQuery += ` WHERE ${orClauses}`;
+        
+                // ép searchText về chữ thường và thêm wildcard
+                const values = conditions.$or.map(cond => {
+                    const value = Object.values(cond)[0];
+                    return `%${value.toLowerCase()}%`;
+                });
+                params.push(...values);
             }
-
+            
             // Thêm ORDER BY và LIMIT
-            query += ` ORDER BY ${orderBy} LIMIT ? OFFSET ?`;
+            query += ` ORDER BY ${orderBy} ${sort} LIMIT ? OFFSET ?`;
 
             // Lấy tổng số bản ghi
-            const [countResult] = await pool.query(countQuery, params);
+            const [countResult] = await     database.pool.query(countQuery, params);
             const total = countResult[0].total;
 
             // Lấy dữ liệu
-            const [rows] = await pool.query(query, [...params, limit, offset]);
+            const [rows] = await database.pool.query(query, [...params, limit, offset]);
 
             // Tính toán pagination
             const totalPages = Math.ceil(total / limit);
 
             return {
-                data: rows,
+                content: rows,
                 pagination: {
                     currentPage: page,
                     totalPages: totalPages,
-                    totalRecords: total,
-                    limit: limit,
+                    totalElements: total,
+                    size: limit,
                     hasNextPage: page < totalPages,
                     hasPrevPage: page > 1
                 }
@@ -89,17 +98,46 @@ class BaseService {
         }
     }
 
+    // dùng cho phân trang phức tạp trả về query 
+    async paginateRawQuery(baseQuery,page=0,limit=10,params=[]){
+        try {
+            const offset = page * limit;
+            const countQuery = `SELECT COUNT(*) as total FROM (${baseQuery}) as subQuery`;
+            const [countResult] = await database.pool.query(countQuery, params);
+            const total = countResult[0].total;
+
+            const totalPages = Math.ceil(total / limit);
+
+            const query = baseQuery + ` LIMIT ? OFFSET ?`;
+            const [rows] = await database.pool.query(query, [...params, limit, offset]);
+            return {
+                content: rows,
+                pagination: {
+                    currentPage: page,
+                    totalPages: totalPages,
+                    totalElements: total,
+                    size: limit,
+                    hasNextPage: page < totalPages,
+                    hasPrevPage: page > 1
+                }
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
     /**
      * Tìm bản ghi theo ID
      * @param {Number} id - ID của bản ghi
      * @param {Array} columns - Các cột cần lấy (default: *)
      * @returns {Promise<Object|null>}
      */
-    async findById(id, columns = ['*']) {
+    async findById(id, columns = ['*'], keyColumn = 'id') {
         try {
             const columnStr = columns.join(', ');
-            const query = `SELECT ${columnStr} FROM ${this.tableName} WHERE id = ?`;
-            const [rows] = await pool.query(query, [id]);
+            const query = `SELECT ${columnStr} FROM ${this.tableName} WHERE ${keyColumn} = ?`;
+            const [rows] = await database.pool.query(query, [id]);
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw error;
@@ -110,7 +148,7 @@ class BaseService {
         try {
             const columnStr = columns.join(', ');
             const query = `SELECT ${columnStr} FROM ${this.tableName} WHERE email = ?`;
-            const [rows] = await pool.query(query, [email]);
+            const [rows] = await database.pool.query(query, [email]);
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw error;
@@ -130,7 +168,7 @@ class BaseService {
                 .map(key => `${key} = ?`)
                 .join(' AND ');
             const query = `SELECT ${columnStr} FROM ${this.tableName} WHERE ${whereClause} LIMIT 1`;
-            const [rows] = await pool.query(query, Object.values(conditions));
+            const [rows] = await database.pool.query(query, Object.values(conditions));
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw error;
@@ -147,7 +185,7 @@ class BaseService {
             const columns = Object.keys(data).join(', ');
             const placeholders = Object.keys(data).map(() => '?').join(', ');
             const query = `INSERT INTO ${this.tableName} (${columns}) VALUES (${placeholders})`;
-            const [result] = await pool.query(query, Object.values(data));
+            const [result] = await database.pool.query(query, Object.values(data));
             return {
                 insertId: result.insertId,
                 affectedRows: result.affectedRows
@@ -176,7 +214,8 @@ class BaseService {
             const values = dataArray.flatMap(obj => Object.values(obj));
             const query = `INSERT INTO ${this.tableName} (${columns}) VALUES ${placeholders}`;
             
-            const [result] = await pool.query(query, values);
+            const [result] = await database.pool.query(query, values);
+            
             return {
                 insertId: result.insertId,
                 affectedRows: result.affectedRows
@@ -198,7 +237,7 @@ class BaseService {
                 .map(key => `${key} = ?`)
                 .join(', ');
             const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = ?`;
-            const [result] = await pool.query(query, [...Object.values(data), id]);
+            const [result] = await database.pool.query(query, [...Object.values(data), id]);
             return {
                 affectedRows: result.affectedRows,
                 changedRows: result.changedRows
@@ -223,7 +262,7 @@ class BaseService {
                 .map(key => `${key} = ?`)
                 .join(' AND ');
             const query = `UPDATE ${this.tableName} SET ${setClause} WHERE ${whereClause}`;
-            const [result] = await pool.query(query, [...Object.values(data), ...Object.values(conditions)]);
+            const [result] = await database.pool.query(query, [...Object.values(data), ...Object.values(conditions)]);
             return {
                 affectedRows: result.affectedRows,
                 changedRows: result.changedRows
@@ -241,7 +280,7 @@ class BaseService {
     async delete(id) {
         try {
             const query = `DELETE FROM ${this.tableName} WHERE id = ?`;
-            const [result] = await pool.query(query, [id]);
+            const [result] = await database.pool.query(query, [id]);
             return {
                 affectedRows: result.affectedRows
             };
@@ -261,7 +300,7 @@ class BaseService {
                 .map(key => `${key} = ?`)
                 .join(' AND ');
             const query = `DELETE FROM ${this.tableName} WHERE ${whereClause}`;
-            const [result] = await pool.query(query, Object.values(conditions));
+            const [result] = await database.pool.query(query, Object.values(conditions));
             return {
                 affectedRows: result.affectedRows
             };
@@ -278,7 +317,7 @@ class BaseService {
     async softDelete(id) {
         try {
             const query = `UPDATE ${this.tableName} SET deleted_at = NOW() WHERE id = ?`;
-            const [result] = await pool.query(query, [id]);
+            const [result] = await database.pool.query(query, [id]);
             return {
                 affectedRows: result.affectedRows
             };
@@ -305,7 +344,7 @@ class BaseService {
                 params.push(...Object.values(conditions));
             }
 
-            const [rows] = await pool.query(query, params);
+            const [rows] = await database.pool.query(query, params);
             return rows[0].total;
         } catch (error) {
             throw error;
@@ -334,7 +373,7 @@ class BaseService {
      */
     async rawQuery(query, params = []) {
         try {
-            const [rows] = await pool.query(query, params);
+            const [rows] = await database.pool.query(query, params);
             return rows;
         } catch (error) {
             throw error;
@@ -361,11 +400,11 @@ class BaseService {
             const searchPattern = `%${keyword}%`;
             
             // Lấy tổng số bản ghi
-            const [countResult] = await pool.query(countQuery, [searchPattern]);
+            const [countResult] = await database.pool.query(countQuery, [searchPattern]);
             const total = countResult[0].total;
             
             // Lấy dữ liệu
-            const [rows] = await pool.query(query, [searchPattern, limit, offset]);
+            const [rows] = await database.pool.query(query, [searchPattern, limit, offset]);
             
             const totalPages = Math.ceil(total / limit);
             
@@ -386,4 +425,4 @@ class BaseService {
     }
 }
 
-module.exports = BaseService;
+export default BaseService;
