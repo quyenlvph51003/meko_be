@@ -39,8 +39,8 @@ function loadUsers(page = 0, size = pageSize) {
                         <td>
                             ${
                             user.avatar
-                                ? `<img style="width:80px;height:80px;object-fit:cover;" src="${user.avatar}" alt="">`
-                                : `<img style="width:80px;height:80px;object-fit:cover;" src="/img/user-default.png" alt="">`
+                                ? `<img style="border-radius: 16px;width:80px;height:80px;object-fit:cover;" src="${user.avatar}" alt="">`
+                                : `<img style="border-radius: 16px;width:80px;height:80px;object-fit:cover;" src="/img/user-default.png" alt="">`
                             }
                         </td>
                         <td>${user.username}</td>
@@ -52,7 +52,7 @@ function loadUsers(page = 0, size = pageSize) {
                         <td>${updatedAt}</td>
                         <td style="text-align: center;padding-left:0;">
                             <span class="svg-icon svg-icon-primary svg-icon-2x"><!--begin::Svg Icon | path:C:\wamp64\www\keenthemes\themes\metronic\theme\html\demo1\dist/../src/media/svg/icons\Communication\Write.svg-->
-                                <svg class="btn-edit-user" style="cursor: pointer; width: 36px !important;height: 36px !important;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                <svg id="btn_edit_user" data-id="${user.id}" class="btn-edit-user" style="cursor: pointer; width: 36px !important;height: 36px !important;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
                                     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                         <rect x="0" y="0" width="24" height="24"/>
                                         <path d="M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z" fill="#000000" fill-rule="nonzero" transform="translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953) "/>
@@ -101,6 +101,41 @@ $('#page-size-selector').on('change', function() {
     loadUsers(currentPage, pageSize);
 });
 
+function addUser() {
+    const data = {
+        username: $('#username').val(),
+        email: $('#email').val(),
+        password: $('#password').val(),
+        address_name: $('#address_name').val()
+    };
+
+    $.ajax({
+        url: '/api/user/create',
+        type: 'POST',
+        data: data,
+        success: function(res) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: res.message,
+                timer: 2000,
+                showConfirmButton: false
+            });
+            $('#exampleModalCenter').modal('hide');
+            loadUsers();
+        },
+        error: function(err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Thất bại!',
+                text: err.responseJSON?.message || 'Không thể thêm user. Vui lòng thử lại!',
+                confirmButtonText: 'Đóng'
+            });
+            console.error('Không thể thêm user:', err);
+        }
+    });
+}
+
 $(document).ready(function() {
     loadUsers();
 
@@ -116,81 +151,174 @@ $(document).ready(function() {
                 <form id="userForm">
                     <div class="form-group">
                         <label>Username:</label>
-                        <input type="text" name="username" class="form-control" placeholder="Nhập username" required>
+                        <input id="username" type="text" name="username" class="form-control" placeholder="Nhập username" required>
                     </div>
                     <div class="form-group">
                         <label>Email:</label>
-                        <input type="email" name="email" class="form-control" placeholder="Nhập email" required>
+                        <input id="email" type="email" name="email" class="form-control" placeholder="Nhập email" required>
                     </div>
                     <div class="form-group">
                         <label>Password:</label>
-                        <input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Role:</label>
-                        <select name="role" class="form-control" required>
-                            <option value="">-- Chọn vai trò --</option>
-                            <option value="0">User</option>
-                            <option value="1">Admin</option>
-                        </select>
+                        <input id="password" type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required>
                     </div>
                     <div class="form-group">
                         <label>Địa chỉ:</label>
-                        <input type="text" name="address_name" class="form-control" placeholder="Nhập địa chỉ">
+                        <input id="address_name" type="text" name="address_name" class="form-control" placeholder="Nhập địa chỉ">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-light-primary" data-dismiss="modal">Huỷ</button>
-                <button type="button" class="btn btn-primary btn-save-add">Thêm</button>
+                <button id="btn_save_add" type="button" class="btn btn-primary btn-save-add">Thêm</button>
             </div>
         `;
         $('#modalContent').html(htmlAdd);
         $('#exampleModalCenter').modal('show');
     });
 
-    // Khi click "Sửa" (ví dụ)
     $(document).on('click', '.btn-edit-user', function() {
         const userId = $(this).data('id');
-        const htmlEdit = `
-            <div class="modal-header">
-                <h5 class="modal-title">Chỉnh sửa thông tin người dùng</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <i aria-hidden="true" class="ki ki-close"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="userForm">
-                    <div class="form-group">
-                        <label>Username:</label>
-                        <input type="text" name="username" class="form-control" placeholder="Nhập username" required>
+        $.ajax({
+            url: '/api/user/detail/' + userId,
+            type: 'GET',
+            success: function(res) {
+                const htmlEdit = `
+                    <div class="modal-header">
+                        <h5 class="modal-title">Chỉnh sửa thông tin người dùng</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i aria-hidden="true" class="ki ki-close"></i>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label>Email:</label>
-                        <input type="email" name="email" class="form-control" placeholder="Nhập email" required>
+                    <div class="modal-body">
+                        <form id="userForm">
+                            <div class="form-group text-center">
+                                <label>Ảnh đại diện:</label>
+                                <div class="mb-3">
+                                    ${
+                                        res.data.avatar
+                                            ? `<img style="width:120px;height:120px;object-fit:cover;" src="${res.data.avatar}" alt="">`
+                                            : `<img style="width:120px;height:120px;object-fit:cover;" src="/img/user-default.png" alt="">`
+                                    }
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <input id="avatar_edit" type="file" name="avatar" accept="image/*" class="form-control-file">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Username:</label>
+                                <input value="${res.data.username}" id="username_edit" type="text" name="username" class="form-control" placeholder="Nhập username" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email:</label>
+                                <input value="${res.data.email}" id="email_edit" type="email" name="email" class="form-control" placeholder="Nhập email" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Địa chỉ:</label>
+                                <input value="${res.data.address_name}" id="address_name_edit" type="text" name="address_name" class="form-control" placeholder="Nhập địa chỉ">
+                            </div>
+                            <div class="form-group">
+                                <label>Trạng thái:</label>
+                                <select id="status_edit" name="status" class="form-control">
+                                    <option value="0" ${res.data.is_active == 1 ? 'selected' : ''}>Hoạt động</option>
+                                    <option value="1" ${res.data.is_active == 0 ? 'selected' : ''}>Đã khoá</option>
+                                </select>
+                            </div>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label>Role:</label>
-                        <select name="role" class="form-control" required>
-                            <option value="">-- Chọn vai trò --</option>
-                            <option value="0">User</option>
-                            <option value="1">Admin</option>
-                        </select>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light-primary" data-dismiss="modal">Huỷ</button>
+                        <button id="btn_save_edit" type="button" class="btn btn-primary btn-save-add">Lưu</button>
                     </div>
-                    <div class="form-group">
-                        <label>Địa chỉ:</label>
-                        <input type="text" name="address_name" class="form-control" placeholder="Nhập địa chỉ">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light-primary" data-dismiss="modal">Huỷ</button>
-                <button type="button" class="btn btn-primary btn-save-add">Lưu</button>
-            </div>
-        `;
-        $('#modalContent').html(htmlEdit);
-        $('#exampleModalCenter').modal('show');
+                `;
+                $('#modalContent').html(htmlEdit);
+                $('#exampleModalCenter').modal('show');
+
+                $('#avatar_edit').on('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            $('#preview_image').attr('src', e.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                $(document).off('click', '#btn_save_edit').on('click', '#btn_save_edit', async  function() {
+                    let avatarUrl = res.data.avatar;
+                    const file = $('#avatar_edit')[0].files[0];
+                    try {
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                        // Nếu có ảnh mới thì upload trước
+                        if (file) {
+                            const formData = new FormData();
+                            formData.append('avatar', file);
+
+                            const uploadRes = await $.ajax({
+                                url: '/api/user/upload-avatar/' + userId,
+                                type: 'PUT',
+                                data: formData,
+                                processData: false,
+                                contentType: false
+                            });
+
+                            avatarUrl = uploadRes.data?.avatar_url || avatarUrl;
+                        }
+
+                        // Sau khi có link ảnh thì gọi update thông tin
+                        const dataEdit = {
+                            userId: userId,
+                            username: $('#username_edit').val(),
+                            email: $('#email_edit').val(),
+                            address_name: $('#address_name_edit').val(),
+                            is_active: $('#status_edit').val(),
+                            avatar_url: avatarUrl
+                        };
+
+                        const updateRes = await $.ajax({
+                            url: '/api/user/update-user',
+                            type: 'PUT',
+                            data: dataEdit
+                        });
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: updateRes.message || 'Cập nhật thành công!',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+
+                        $('#exampleModalCenter').modal('hide');
+                        loadUsers();
+
+                    } catch (err) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: err.responseJSON?.message || 'Không thể cập nhật user.',
+                            confirmButtonText: 'Đóng'
+                        });
+                        console.error('Lỗi khi cập nhật user:', err);
+                    }
+                });
+            },
+            error: function(err) {
+                console.error('Không thể thêm user:', err);
+            }
+        });
     });
+
+    $(document).on('click', '#btn_save_add', function() {
+        addUser();
+    });
+
 });
 
 
