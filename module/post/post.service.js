@@ -155,7 +155,7 @@ class PostService{
         const provinceCode=post.provinceCode;
         const userId=post.userId;
         const status=post.status;
-        const categoryId=post.categoryId;   
+        const categoryIds=post.categoryIds;   
         
         if(userId){
             const user=await UserRepository.findByIdUserRepo(userId);
@@ -185,10 +185,36 @@ class PostService{
                 throw new Error('Ward not found');
             }
         }
-        return await PostRepository.searchPostRepo(searchText,wardCode,provinceCode,userId,status,categoryId,page,limit);
-
-
-
+        if (categoryIds && categoryIds.length !== 0) {
+            if (Array.isArray(categoryIds)) { //categoryIds
+                for(const e of categoryIds){
+                    const categoryExist=await Category.getCategoryRepoById(e);
+                    if(!categoryExist){
+                        throw new Error('Category not found');
+                    }
+                }
+            } else {
+                throw new Error('Category ID is not an array');
+            }
+        }
+        return await PostRepository.searchPostRepo(searchText,wardCode,provinceCode,userId,status,categoryIds,page,limit);
     }
+
+
+    async updateStatusPostService(postId,status){
+        const postExists=await PostRepository.findById(postId);
+        if(!postExists){
+            throw new Error('Post not found');
+        }
+
+        if(!PostStatus.includes(status)){
+            throw new Error('Status not found');
+        }
+        // cần check luồng của status và trạng thái hiện tại 
+        
+
+        return await PostRepository.updateStatusPostRepo(postId,status);
+    }
+
 }
 export default new PostService();

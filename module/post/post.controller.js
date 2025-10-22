@@ -109,6 +109,13 @@ const searchPostController=async(req,res,next)=>{
         if(error.message==='User not found'){
             return ResponseUtils.notFoundResponse(res,'Không tìm thấy người dùng');
         }
+        if(error.message==='Category not found'){
+            return ResponseUtils.notFoundResponse(res,'Không tìm thấy danh mục sản phẩm');
+        }
+        if(error.message==='Category ID is not an array'){
+            return ResponseUtils.notFoundResponse(res,'Cần truyền mảng danh mục sản phẩm');
+        }
+        
         console.log(error);
         return ResponseUtils.serverErrorResponse(res);
     }

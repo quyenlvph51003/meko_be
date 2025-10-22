@@ -8,6 +8,6 @@ import upload from '../../utils/upload_cloudinary.js';
 router.post('/create',Middleware.authenticate,upload.array('images'),PostValidation.validatonCreatePost,PostController.createPostController);
 router.get('/detail/:postId',PostController.getDetailByPostIdController);
 router.put('/update',Middleware.authenticate,upload.array('images'),PostValidation.validationUpdatePost,PostController.updatePostByIdController);
-router.post('/search-post',PostValidation.validateSearchPost,PostController.searchPostController)
+router.post('/search-post',PostValidation.validateSearchPost,PostValidation.validateSearchPost,PostController.searchPostController)
 
 export default router;

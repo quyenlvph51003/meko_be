@@ -20,6 +20,13 @@ class CategoryRepository extends BaseService{
     async getListCategoryRepo(){
         return await this.getAll();
     }
+    async searchCategoryRepo(searchText,page,size,sort){
+        const conditions={};
+        conditions['$or'] = [
+                { name: searchText },
+            ];
+        return await this.paginate(Number(page),Number(size),conditions,'id',sort);
+    }
 }
 
 export default new CategoryRepository();

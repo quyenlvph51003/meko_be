@@ -1,9 +1,9 @@
 const PostStatus=Object.freeze({
-    PENDING:'PENDING',
-    APPROVED:'APPROVED',
-    REJECTED:'REJECTED',
-    VIOLATION:'VIOLATION',
-    DELETED:'HIDDEN'
+    PENDING:'PENDING', // chờ duyệt
+    APPROVED:'APPROVED', // đã duyệt
+    REJECTED:'REJECTED', // từ chối
+    VIOLATION:'VIOLATION', // vi phạm
+    DELETED:'HIDDEN' // ẩn tin
 })
 
 export default {PostStatus}
