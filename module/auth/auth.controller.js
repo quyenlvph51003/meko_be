@@ -115,7 +115,6 @@ const authController={
                 return ResponseUtils.validationErrorResponse(res,'Mã OTP đã hết hạn');
             }
             console.log(error);
-
             return ResponseUtils.serverErrorResponse(res);
         }
     },

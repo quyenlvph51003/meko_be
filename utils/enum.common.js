@@ -3,7 +3,7 @@ const PostStatus=Object.freeze({
     APPROVED:'APPROVED',
     REJECTED:'REJECTED',
     VIOLATION:'VIOLATION',
-    DELETED:'DELETED'
+    DELETED:'HIDDEN'
 })
 
 export default {PostStatus}

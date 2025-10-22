@@ -5,6 +5,7 @@ import WardRepository from '../address/wards/ward.repository.js';
 import ImagePostRepository from '../image_post/image.repository.js';
 import PostCategoriesRepository from '../post_categories/post.categories.repository.js';
 import Category from '../category/category.repository.js';
+import PostStatus from '../../utils/enum.common.js';
 
 class PostService{
     async createPost(post){
@@ -43,7 +44,6 @@ class PostService{
             address:post.address,
             price:post.price,
             expired_at: expiredAtFormatted,
-            is_hidden:1
         }
         const postResult=await PostRepository.createPostRepo(postSave);
         if(!postResult) return;
@@ -145,6 +145,49 @@ class PostService{
         await PostRepository.updatePostRepo(postUpdate,postId);
 
         return await this.getDetailByPostId(postId); // trả ra detail
+
+    };
+
+
+    async searchPost(post,page,limit){
+        const searchText=post.searchText;
+        const wardCode=post.wardCode;
+        const provinceCode=post.provinceCode;
+        const userId=post.userId;
+        const status=post.status;
+        const categoryId=post.categoryId;   
+        
+        if(userId){
+            const user=await UserRepository.findByIdUserRepo(userId);
+            if(!user){
+                throw new Error('User not found');
+            }
+        }
+        if(status){
+            console.log(PostStatus);
+            console.log(status);
+            
+            if(!(Object.values(PostStatus.PostStatus).includes(status))){
+            throw new Error('Status not found');
+        }
+        }
+
+        if(provinceCode){
+            const province=await ProvinceRepository.getProvinceByCode(provinceCode);
+            if(!province){
+                throw new Error('Province not found');
+            }
+        }
+
+        if(wardCode){
+            const ward=await WardRepository.getWardByCode(wardCode);
+            if(!ward){
+                throw new Error('Ward not found');
+            }
+        }
+        return await PostRepository.searchPostRepo(searchText,wardCode,provinceCode,userId,status,categoryId,page,limit);
+
+
 
     }
 }

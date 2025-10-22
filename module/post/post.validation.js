@@ -101,7 +101,7 @@ const validationUpdatePost=(req,res,next)=>{
 }
 
 const validateSearchPost=(req,res,next)=>{
-    
+    next();
 }
 
 export default {validatonCreatePost,validationUpdatePost,validateSearchPost}
