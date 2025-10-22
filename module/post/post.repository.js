@@ -20,10 +20,40 @@ class PostRepository extends BaseService {
         return result[0];
     }
     
-    async searchPostRepo(keyword,wardCode,provinceCode,userId,page,limit){
+    async searchPostRepo(searchText,wardCode,provinceCode,userId,status,categoryId,page,limit){
+
+        const conditions=[];
+
+        if(searchText){
+            conditions.push(`p.title LIKE '%${searchText}%'`);
+        }
+
+        if(wardCode){
+            conditions.push(`p.ward_code = ${wardCode}`);
+        }
+
+        if(provinceCode){
+            conditions.push(`p.province_code = ${provinceCode}`);
+        }
+
+        if(userId){
+            conditions.push(`p.user_id = ${userId}`);
+        }
+
+        if(status){
+            conditions.push(`p.status = '${status}'`);
+        }
+
+        if(categoryId){
+            conditions.push(`pc.category_id = ${categoryId}`);
+        }
+
         //status is_hidden ward_code province_code userId
-        const query=stringCommonUtils.queryPostDetail(`p.title LIKE '%${keyword}%' and p.is_hidden=0 and p.ward_code=${wardCode} and p.province_code=${provinceCode} and p.user_id=${userId}`);
-        const [result]=await database.pool.query(query);
+        // const query=stringCommonUtils.queryPostDetail(`p.title LIKE '%${keyword}%' and p.ward_code=${wardCode} and p.province_code=${provinceCode} and p.user_id=${userId} and p.status=${status}`);
+        const query=stringCommonUtils.queryPostDetail(`${conditions.join(' and ')}`);
+        const result=await this.paginateRawQuery(query,page,limit);
+       
+        // const [result]=await database.pool.query(query);
         return result;
     }
 
