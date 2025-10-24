@@ -1,3 +1,4 @@
+import { PostStatus } from '../../utils/enum.common.js';
 import ResponseUtils from '../../utils/response_utils.js';
 
 const validatonCreatePost=(req,res,next)=>{
@@ -110,9 +111,19 @@ const validateSearchPost=(req,res,next)=>{
 }
 
 const validateUpdateStatusPost=(req,res,next)=>{
- const status=req.query.status;
+ const {status,reasonReject, reasonViolation, violationId}=req.body;
  if(!status){
     return ResponseUtils.validationErrorResponse(res,'Trạng thái không hợp lệ');
+ }
+ if(status==PostStatus.VIOLATION){
+    if(!reasonViolation || !violationId){
+        return ResponseUtils.validationErrorResponse(res,'Lí do vi phạm và ID vi phạm không được để trống');
+    }
+ }
+ if(status==PostStatus.REJECTED){
+    if(!reasonReject){
+        return ResponseUtils.validationErrorResponse(res,'Lí do từ chối không được để trống');
+    }
  }
  next();
 }

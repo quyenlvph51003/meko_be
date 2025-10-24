@@ -124,9 +124,14 @@ const searchPostController=async(req,res,next)=>{
 
 const updateStatusPostController=async(req,res,next)=>{
     try{
+        const role=req.user.role;
         const postId=req.params.postId;
-        const status=req.query.status;
-        const post=await PostService.updateStatusPostService(postId,status);
+        const {status,reasonReject,reasonViolation, violationId}=req.body;
+
+        if((status===PostStatus.VIOLATION || status===PostStatus.REJECTED) && role!=1){
+            return ResponseUtils.validationErrorResponse(res,'Chỉ admin mới có quyền thay đổi trạng thái này');
+        }
+        const post=await PostService.updateStatusPostService(postId,status,reasonReject,reasonViolation,violationId);
         return ResponseUtils.successResponse(res,null,'Cập nhật trạng thái bài viết thành công');
     }catch(error){
         const message = error.message;
@@ -135,6 +140,7 @@ const updateStatusPostController=async(req,res,next)=>{
     const errorMap = {
       'Post not found': ['notFoundResponse', 'Không tìm thấy bài viết'],
       'Status not found': ['validationErrorResponse', 'Trạng thái không hợp lệ'],
+      'Violation not found': ['validationErrorResponse', 'Không tìm thấy nội dung vi phạm'],
     };
 
     // 🎯 Nếu là lỗi chuyển trạng thái (Invalid transition)
@@ -151,6 +157,7 @@ const updateStatusPostController=async(req,res,next)=>{
         [`${PostStatus.HIDDEN}->${PostStatus.PENDING}`]: 'Bài viết bị ẩn không thể chuyển sang chờ duyệt.',
         [`${PostStatus.PENDING}->${PostStatus.HIDDEN}`]: 'Không thể ẩn bài khi đang chờ duyệt.',
         [`${PostStatus.PENDING}->${PostStatus.PENDING}`]: 'Bài viết đã ở trạng thái chờ duyệt.',
+        [`${PostStatus.PENDING}->${PostStatus.VIOLATION}`]: 'Bài viết chưa duyệt không thể vi phạm.',
       };
 
       const key = `${from}->${to}`;
