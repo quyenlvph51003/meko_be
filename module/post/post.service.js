@@ -5,7 +5,9 @@ import WardRepository from '../address/wards/ward.repository.js';
 import ImagePostRepository from '../image_post/image.repository.js';
 import PostCategoriesRepository from '../post_categories/post.categories.repository.js';
 import Category from '../category/category.repository.js';
-import PostStatus from '../../utils/enum.common.js';
+import {PostStatus} from '../../utils/enum.common.js';
+import ValidateUtils from '../../utils/validate_utils.js';
+
 
 class PostService{
     async createPost(post){
@@ -164,10 +166,7 @@ class PostService{
             }
         }
         if(status){
-            console.log(PostStatus);
-            console.log(status);
-            
-            if(!(Object.values(PostStatus.PostStatus).includes(status))){
+            if(!(Object.values(PostStatus).includes(status))){
             throw new Error('Status not found');
         }
         }
@@ -202,17 +201,33 @@ class PostService{
 
 
     async updateStatusPostService(postId,status){
+
+        //khi có thanh toán thì check lại 
+        // có 2 case reject thì chỉnh sửa lại rồi lại sang pending 
+        // không refund khi bị vi phạm hoặc người dùng ẩn tin
+        // phát triển thêm đăt giới hạn bị từ chối repost không mất phí
         const postExists=await PostRepository.findById(postId);
         if(!postExists){
             throw new Error('Post not found');
         }
 
-        if(!PostStatus.includes(status)){
+        if(!ValidateUtils.isValidPostStatus(status)){
             throw new Error('Status not found');
         }
-        // cần check luồng của status và trạng thái hiện tại 
-        
 
+        const currentStatus=postExists.status;
+        
+        const VALID_TRANSITIONS = {
+            [PostStatus.PENDING]: [PostStatus.APPROVED, PostStatus.REJECTED, PostStatus.VIOLATION],
+            [PostStatus.APPROVED]: [PostStatus.HIDDEN, PostStatus.VIOLATION],
+            [PostStatus.REJECTED]: [PostStatus.PENDING], // cho phép gửi lại
+            [PostStatus.HIDDEN]: [PostStatus.APPROVED],
+            [PostStatus.VIOLATION]: [], // không cho đổi nữa
+        };
+         const allowedNext = VALID_TRANSITIONS[currentStatus] || [];
+         if (!allowedNext.includes(status)) {
+            throw new Error(`Invalid transition from ${currentStatus} to ${status}`);
+         }
         return await PostRepository.updateStatusPostRepo(postId,status);
     }
 

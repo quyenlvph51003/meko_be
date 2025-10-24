@@ -1,5 +1,6 @@
 import PostService from './post.service.js';
 import ResponseUtils from '../../utils/response_utils.js';
+import { PostStatus } from '../../utils/enum.common.js';
 const createPostController=async(req,res,next)=>{
     try{
         console.log(req.body);
@@ -121,5 +122,52 @@ const searchPostController=async(req,res,next)=>{
     }
 }
 
+const updateStatusPostController=async(req,res,next)=>{
+    try{
+        const postId=req.params.postId;
+        const status=req.query.status;
+        const post=await PostService.updateStatusPostService(postId,status);
+        return ResponseUtils.successResponse(res,null,'Cập nhật trạng thái bài viết thành công');
+    }catch(error){
+        const message = error.message;
 
-export default {createPostController,getDetailByPostIdController,updatePostByIdController,searchPostController}
+    // 🔍 Bắt lỗi xác định
+    const errorMap = {
+      'Post not found': ['notFoundResponse', 'Không tìm thấy bài viết'],
+      'Status not found': ['validationErrorResponse', 'Trạng thái không hợp lệ'],
+    };
+
+    // 🎯 Nếu là lỗi chuyển trạng thái (Invalid transition)
+    if (message.startsWith('Invalid transition')) {
+      const [, from, to] = message.match(/from (\w+) to (\w+)/) || [];
+
+      // Map chi tiết từng cặp chuyển trạng thái
+      const transitionMessages = {
+        [`${PostStatus.APPROVED}->${PostStatus.PENDING}`]: 'Bài viết đã duyệt không thể chuyển về chờ duyệt.',
+        [`${PostStatus.APPROVED}->${PostStatus.REJECTED}`]: 'Không thể từ chối bài viết đã được duyệt.',
+        [`${PostStatus.REJECTED}->${PostStatus.APPROVED}`]: 'Bài bị từ chối cần gửi lại (PENDING) trước khi được duyệt.',
+        [`${PostStatus.VIOLATION}->${PostStatus.PENDING}`]: 'Bài viết vi phạm không thể gửi lại.',
+        [`${PostStatus.VIOLATION}->${PostStatus.APPROVED}`]: 'Bài viết vi phạm không thể được duyệt lại.',
+        [`${PostStatus.HIDDEN}->${PostStatus.PENDING}`]: 'Bài viết bị ẩn không thể chuyển sang chờ duyệt.',
+        [`${PostStatus.PENDING}->${PostStatus.HIDDEN}`]: 'Không thể ẩn bài khi đang chờ duyệt.',
+        [`${PostStatus.PENDING}->${PostStatus.PENDING}`]: 'Bài viết đã ở trạng thái chờ duyệt.',
+      };
+
+      const key = `${from}->${to}`;
+      const friendlyMessage = transitionMessages[key] || `Không thể chuyển trạng thái từ ${from} sang ${to}.`;
+      return ResponseUtils.validationErrorResponse(res, friendlyMessage);
+    }
+
+    // 🧠 Các lỗi thông thường khác
+    const match = errorMap[message];
+    if (match) {
+      const [method, msg] = match;
+      return ResponseUtils[method](res, msg);
+    }
+
+    // ⚠️ Lỗi không xác định
+    return ResponseUtils.serverErrorResponse(res, 'Lỗi hệ thống, vui lòng thử lại sau.');
+    }
+}
+
+export default {createPostController,getDetailByPostIdController,updatePostByIdController,searchPostController,updateStatusPostController}

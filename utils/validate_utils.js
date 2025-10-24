@@ -1,10 +1,15 @@
+
+import { PostStatus } from "./enum.common.js";
 function isValidEmail(email) {
     // Regex chuẩn để check email
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   }
   
-  export default { isValidEmail };  
-  
+function isValidPostStatus(status) {
+  if (!status) return false; // tránh null/undefined
+  return Object.values(PostStatus).includes(status.toUpperCase());
+}
 
-  //dsaddddsadsadsadsadsadsadsadsadsadsadsadsadsadsadsadsadsadsadsadsadsadsadsadsa
+  export default { isValidEmail,isValidPostStatus };  
+  

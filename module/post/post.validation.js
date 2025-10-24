@@ -109,4 +109,12 @@ const validateSearchPost=(req,res,next)=>{
     next();
 }
 
-export default {validatonCreatePost,validationUpdatePost,validateSearchPost}
+const validateUpdateStatusPost=(req,res,next)=>{
+ const status=req.query.status;
+ if(!status){
+    return ResponseUtils.validationErrorResponse(res,'Trạng thái không hợp lệ');
+ }
+ next();
+}
+
+export default {validatonCreatePost,validationUpdatePost,validateSearchPost,validateUpdateStatusPost}
