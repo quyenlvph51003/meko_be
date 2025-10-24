@@ -49,7 +49,6 @@ class BaseService {
             let countQuery = `SELECT COUNT(*) as total FROM ${this.tableName}`;
             const params = [];
 
-            // Xây dựng WHERE clause
             if (conditions.$or && Array.isArray(conditions.$or)) {
                 const orClauses = conditions.$or
                     .map(cond => {
@@ -70,10 +69,9 @@ class BaseService {
             }
             
             // Thêm ORDER BY và LIMIT
-            query += ` ORDER BY ${orderBy} ${sort} LIMIT ? OFFSET ?`;
-
+            
             // Lấy tổng số bản ghi
-            const [countResult] = await     database.pool.query(countQuery, params);
+            const [countResult] = await database.pool.query(countQuery, params);
             const total = countResult[0].total;
 
             // Lấy dữ liệu
@@ -89,7 +87,7 @@ class BaseService {
                     totalPages: totalPages,
                     totalElements: total,
                     size: limit,
-                    hasNextPage: page < totalPages,
+                    hasNextPage: (page+1) <= totalPages,
                     hasPrevPage: page > 1
                 }
             };
@@ -118,7 +116,7 @@ class BaseService {
                     totalPages: totalPages,
                     totalElements: total,
                     size: limit,
-                    hasNextPage: page < totalPages,
+                    hasNextPage: (page+1) <= totalPages,
                     hasPrevPage: page > 1
                 }
             };

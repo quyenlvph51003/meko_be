@@ -28,7 +28,6 @@ class UserService{
             conditions['$or'] = [
                 { username: searchText },
                 { email: searchText },
-                { id: searchText }
             ];
         }
         return await UserRepository.searchUserRepo(page,size,conditions,orderBy,sort);

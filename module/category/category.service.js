@@ -13,6 +13,9 @@ class CategoryService{
     async getListCategoryService(){
         return await CategoriesRepository.getListCategoryRepo();
     }
+    async searchCategoryService(searchText,page,size,sort){
+        return await CategoriesRepository.searchCategoryRepo(searchText,page,size,sort);
+    }
 }
 
 export default new CategoryService();

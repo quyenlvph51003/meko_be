@@ -57,13 +57,15 @@ const userController={
         try {
             const {userId,username,address,isActive}=req.body;
             const user=await userService.findByIdUser(userId);
+            const roleToken=req.user.role;
+
             if(!user){
                 return ResponseUtils.notFoundResponse(res,'Người dùng không tồn tại');
             }
             user.username=username;
             user.address_name=address;
             if (typeof isActive !== 'undefined') {
-                if (user.role == 1) { //admin mới có quyền cập nhật
+                if (roleToken == 1) { //admin mới có quyền cập nhật
                     user.is_active = isActive;
                 } 
                 else {

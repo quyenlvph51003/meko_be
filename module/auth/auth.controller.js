@@ -19,9 +19,9 @@ const authController={
         try {
             const {email,password}=req.body;
             const user=await authService.login({email,password});
-            const token=jwt.sign({email:user.email},process.env.JWT_SECRET,{expiresIn:'2h'});
+            const token=jwt.sign({email:user.email,role:user.role,userId:user.id},process.env.JWT_SECRET,{expiresIn:'2h'});
 
-            user.refresh_token=jwt.sign({email:user.email},process.env.JWT_SECRET,{expiresIn:'7d'});
+            user.refresh_token=jwt.sign({email:user.email,role:user.role,userId:user.id},process.env.JWT_SECRET,{expiresIn:'7d'});
             user.token_expired = new Date(Date.now() + 2 * 60 * 60 * 1000);
             user.refresh_expired = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
             
@@ -32,6 +32,7 @@ const authController={
                 'refreshToken': user.refresh_token,
                 'tokenExpired': user.token_expired,
                 'refreshTokenExpired': user.refresh_expired,
+                'role':user.role,
                 // 'user': user
             },'Đăng nhập thành công');
         } catch (error) {
@@ -56,9 +57,9 @@ const authController={
             
             const user=await authService.refreshTokenService(email,refreshToken,res);
 
-            const token=jwt.sign({email:user.email},process.env.JWT_SECRET,{expiresIn:'2h'});
+            const token=jwt.sign({email:user.email,role:user.role},process.env.JWT_SECRET,{expiresIn:'2h'});
 
-            user.refresh_token=jwt.sign({email:user.email},process.env.JWT_SECRET,{expiresIn:'7d'});
+            user.refresh_token=jwt.sign({email:user.email,role:user.role,userId:user.id},process.env.JWT_SECRET,{expiresIn:'7d'});
             user.token_expired = new Date(Date.now() + 2 * 60 * 60 * 1000);
             user.refresh_expired = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
             

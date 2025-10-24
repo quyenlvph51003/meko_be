@@ -101,7 +101,20 @@ const validationUpdatePost=(req,res,next)=>{
 }
 
 const validateSearchPost=(req,res,next)=>{
+    const allowedFields=['searchText','wardCode','provinceCode','userId','status','categoryIds'];
+    const invalidFields = Object.keys(req.body).filter(field => !allowedFields.includes(field));
+    if (invalidFields.length > 0) {
+        return ResponseUtils.validationErrorResponse(res, `Các trường ${invalidFields.join(', ')} không hợp lệ`);
+    }
     next();
 }
 
-export default {validatonCreatePost,validationUpdatePost,validateSearchPost}
+const validateUpdateStatusPost=(req,res,next)=>{
+ const status=req.query.status;
+ if(!status){
+    return ResponseUtils.validationErrorResponse(res,'Trạng thái không hợp lệ');
+ }
+ next();
+}
+
+export default {validatonCreatePost,validationUpdatePost,validateSearchPost,validateUpdateStatusPost}
