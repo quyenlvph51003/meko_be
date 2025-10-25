@@ -73,18 +73,18 @@ const searchCategoryController=async(req,res)=>{
         const page=req.query.page;
         const size=req.query.size;
         const sort=req.query.sort;
-        if(!searchText){
-            return ReponseUtils.validationErrorResponse(res,'Tìm kiếm không được để trống');
-        }
-        if(!page){
-            return ReponseUtils.validationErrorResponse(res,'Trang không được để trống');
-        }
-        if(!size){
-            return ReponseUtils.validationErrorResponse(res,'Size không được để trống');
-        }
-        if(!sort || sort !== 'asc' && sort !== 'desc'){
-            return ReponseUtils.validationErrorResponse(res,'Sort không hợp lệ');
-        }
+        // if(!searchText){
+        //     return ReponseUtils.validationErrorResponse(res,'Tìm kiếm không được để trống');
+        // }
+        // if(!Number(page)){
+        //     return ReponseUtils.validationErrorResponse(res,'Trang không được để trống');
+        // }
+        // if(!Number(size)){
+        //     return ReponseUtils.validationErrorResponse(res,'Size không được để trống');
+        // }
+        // if(!sort || sort !== 'asc' && sort !== 'desc'){
+        //     return ReponseUtils.validationErrorResponse(res,'Sort không hợp lệ');
+        // }
         const result=await CategoryService.searchCategoryService(searchText,page,size,sort);
         return ReponseUtils.successResponse(res,result,'Lấy thông tin danh mục thành công');
     }catch(error){

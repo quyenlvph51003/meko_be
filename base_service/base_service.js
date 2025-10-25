@@ -43,7 +43,11 @@ class BaseService {
      */
     async paginate(page = 0, limit = 10, conditions = {}, orderBy = 'id',sort='DESC', columns = ['*']) {
         try {
+            console.log(limit);
+            
             const offset = page * limit;
+            console.log(offset);
+            
             const columnStr = columns.join(', ');
             let query = `SELECT ${columnStr} FROM ${this.tableName}`;
             let countQuery = `SELECT COUNT(*) as total FROM ${this.tableName}`;
@@ -66,6 +70,9 @@ class BaseService {
                     return `%${value.toLowerCase()}%`;
                 });
                 params.push(...values);
+            }else{
+                query += ` ORDER BY ${orderBy} ${sort} LIMIT ? OFFSET ?`;
+                params.push(limit, offset);
             }
             
             // Thêm ORDER BY và LIMIT
@@ -74,12 +81,14 @@ class BaseService {
             const [countResult] = await database.pool.query(countQuery, params);
             const total = countResult[0].total;
 
+
             // Lấy dữ liệu
             const [rows] = await database.pool.query(query, [...params, limit, offset]);
 
             // Tính toán pagination
             const totalPages = Math.ceil(total / limit);
 
+            
             return {
                 content: rows,
                 pagination: {
@@ -87,8 +96,8 @@ class BaseService {
                     totalPages: totalPages,
                     totalElements: total,
                     size: limit,
-                    hasNextPage: (page+1) <= totalPages,
-                    hasPrevPage: page > 1
+                    // hasNextPage: (page+1) <= totalPages,
+                    // hasPrevPage: page > 1
                 }
             };
         } catch (error) {
@@ -116,8 +125,8 @@ class BaseService {
                     totalPages: totalPages,
                     totalElements: total,
                     size: limit,
-                    hasNextPage: (page+1) <= totalPages,
-                    hasPrevPage: page > 1
+                    // hasNextPage: (page+1) <= totalPages,
+                    // hasPrevPage: page > 1
                 }
             };
         } catch (error) {
@@ -414,8 +423,8 @@ class BaseService {
                     totalPages: totalPages,
                     totalRecords: total,
                     limit: limit,
-                    hasNextPage: page < totalPages,
-                    hasPrevPage: page > 1
+                    // hasNextPage: page < totalPages,
+                    // hasPrevPage: page > 1
                 }
             };
         } catch (error) {

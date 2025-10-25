@@ -22,9 +22,11 @@ class CategoryRepository extends BaseService{
     }
     async searchCategoryRepo(searchText,page,size,sort){
         const conditions={};
-        conditions['$or'] = [
+        if(searchText){
+            conditions['$or'] = [
                 { name: searchText },
             ];
+        }
         return await this.paginate(Number(page),Number(size),conditions,'id',sort);
     }
 }
