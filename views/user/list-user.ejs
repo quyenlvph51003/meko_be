@@ -12,9 +12,6 @@ content: `
                     <div class="card-toolbar">
                         <!--begin::Dropdown-->
                         <div class="dropdown dropdown-inline mr-2">
-                            <button type="button" class="btn btn-light-primary font-weight-bolder dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="svg-icon svg-icon-md"></span>Xuất Excel
-                            </button>
                             <button type="button" class="btn-add-user btn btn-primary font-weight-bolder">
                                 <span class="svg-icon svg-icon-md"></span>Thêm mới
                             </button>
@@ -23,6 +20,40 @@ content: `
                     </div>
                 </div>
                 <div class="card-body">
+                    <form class="mb-10">
+                        <div class="row">
+                            <div class="form-group col-12 col-sm-6 col-lg-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="la la-search"></i>
+                                        </span>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        id="input_search" 
+                                        name="input_search" 
+                                        class="form-control search-input" 
+                                        placeholder="Tìm kiếm..."
+                                    >
+                                </div>
+                            </div>
+                            <div class="col-lg-9 col-sm-6 col-12">
+                                <button class="btn btn-primary btn-primary--icon" id="kt_search_4">
+                                    <span>
+                                        <i class="la la-search"></i>
+                                        <span>Tìm kiếm</span>
+                                    </span>
+                                </button>&#160;&#160;
+                                <button class="btn btn-secondary btn-secondary--icon" id="kt_reset_4">
+                                    <span>
+                                        <i class="la la-close"></i>
+                                        <span>Reset</span>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                     <!--begin: Datatable-->
                     <table class="table table-hover table-separate table-head-custom table-checkable" id="kt_datatable1">
                         <thead>
