@@ -1,7 +1,8 @@
 let currentPage = 0;
 let pageSize = parseInt($('#page-size-selector').val());
+let searchText = '';
 
-function loadCategories(page = 0, size = pageSize) {
+function loadCategories(page = 0, size = pageSize, searchText = '') {
     $.ajax({
         url: '/api/category/search',
         method: 'GET',
@@ -11,7 +12,8 @@ function loadCategories(page = 0, size = pageSize) {
         },
         data:{
             page: page,
-            size: size
+            size: size,
+            searchText: searchText
         },
         success: function(res) {
             const tbody = $('#kt_datatable1_body');
@@ -63,19 +65,19 @@ function loadCategories(page = 0, size = pageSize) {
 $('#prev-page').on('click', function() {
     if (currentPage > 0) {
         currentPage--;
-        loadCategories(currentPage, pageSize);
+        loadCategories(currentPage, pageSize, searchText);
     }
 });
 
 $('#next-page').on('click', function() {
     currentPage++;
-    loadCategories(currentPage, pageSize);
+    loadCategories(currentPage, pageSize, searchText);
 });
 
 $('#page-size-selector').on('change', function() {
     pageSize = parseInt($(this).val());
     currentPage = 0;
-    loadCategories(currentPage, pageSize);
+    loadCategories(currentPage, pageSize, searchText);
 });
 
 function addCategory() {
@@ -122,7 +124,7 @@ function addCategory() {
                 showConfirmButton: false
             });
             $('#exampleModalCenter').modal('hide');
-            loadCategories(currentPage, pageSize);
+            loadCategories(currentPage, pageSize, searchText);
         },
         error: function(err) {
             Swal.close();
@@ -138,7 +140,7 @@ function addCategory() {
 }
 
 $(document).ready(function() {
-    loadCategories(currentPage, pageSize);
+    loadCategories(currentPage, pageSize, searchText);
 
     $('.btn-add-category').on('click', function() {
         const htmlAdd = `
@@ -270,7 +272,7 @@ $(document).ready(function() {
                                 showConfirmButton: false
                             });
                             $('#exampleModalCenter').modal('hide');
-                            loadCategories(currentPage, pageSize);
+                            loadCategories(currentPage, pageSize, searchText);
                         },
                         error: function(err) {
                             Swal.close();
@@ -293,6 +295,21 @@ $(document).ready(function() {
 
     $(document).on('click', '#btn_save_add', function() {
         addCategory();
+    });
+
+    $(document).on('click', '#kt_search_4', function(e) {
+        e.preventDefault();
+
+        const searchText = $('#input_search').val().trim();
+        currentPage = 0;
+        loadCategories(currentPage, pageSize, searchText);
+    });
+
+    $(document).on('click', '#kt_reset_4', function(e) {
+        e.preventDefault();
+        $('#input_search').val('');
+        searchText = '';
+        loadCategories(currentPage, pageSize, searchText);
     });
 
 });
