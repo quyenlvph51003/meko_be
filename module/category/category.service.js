@@ -10,11 +10,17 @@ class CategoryService{
     async getDetailCategoryService(id){
         return await CategoriesRepository.getCategoryRepoById(id);
     }
-    async getListCategoryService(){
-        return await CategoriesRepository.getListCategoryRepo();
+    async getListCategoryService(isActive){
+        return await CategoriesRepository.getListCategoryRepo(isActive);
     }
-    async searchCategoryService(searchText,page,size,sort){
-        return await CategoriesRepository.searchCategoryRepo(searchText,page,size,sort);
+    async searchCategoryService(searchText,page,size,sort,isActive){
+        return await CategoriesRepository.searchCategoryRepo(searchText,page,size,sort,isActive);
+    }
+    async updateIsActiveCategoryService(id){
+        const categoryExists=await CategoriesRepository.getCategoryRepoById(id);
+        if(!categoryExists) throw new Error('Category not found');
+        await CategoriesRepository.updateCategoryRepo({id:id,is_active:categoryExists.is_active===1?0:1});
+        return await CategoriesRepository.getCategoryRepoById(id);
     }
 }
 

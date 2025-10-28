@@ -19,6 +19,9 @@ const updateViolationController=async(req,res)=>{
         const result=await ViolationService.updateCategoryViolationService(name,req.params.id);
         return ReponseUtils.successResponse(res,result,'Cập nhật danh mục vi phạm thành công');
     }catch(error){
+        if(error.message==='Not found violation'){
+            return ReponseUtils.notFoundResponse(res,'Không tìm thấy danh mục vi phạm');
+        }
         console.log(error);
         return ReponseUtils.serverErrorResponse(res);
     }
@@ -29,6 +32,9 @@ const deleteViolationController=async(req,res)=>{
         const result=await ViolationService.deleteCategoryViolationService(req.params.id);
         return ReponseUtils.successResponse(res,null,'Xóa danh mục vi phạm thành công');
     }catch(error){
+        if(error.message==='Not found violation'){
+                    return ReponseUtils.notFoundResponse(res,'Không tìm thấy danh mục vi phạm');
+                }
         console.log(error);
         return ReponseUtils.serverErrorResponse(res);
     }

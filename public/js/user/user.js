@@ -1,5 +1,6 @@
 let currentPage = 0;
 let pageSize = parseInt($('#page-size-selector').val());
+let searchText = '';
 
 function formatDate(isoString) {
     if (!isoString) return '';
@@ -10,14 +11,18 @@ function formatDate(isoString) {
     return `${day}/${month}/${year}`;
 }
 
-function loadUsers(page = 0, size = pageSize) {
+function loadUsers(page = 0, size = pageSize, searchText = '') {
     $.ajax({
         url: '/api/user/search',
         method: 'GET',
         contentType: 'application/json',
+        headers: {
+            'Authorization': sessionStorage.getItem('token')
+        },
         data: {
             page: page,
-            size: size
+            size: size,
+            searchText: searchText
         },
         success: function(res) {
             const tbody = $('#kt_datatable1_body');
@@ -26,10 +31,10 @@ function loadUsers(page = 0, size = pageSize) {
                 const createdAt = formatDate(user.created_at);
                 const updatedAt = formatDate(user.updated_at);
                 const lockBtn = user.is_active == 1
-                    ? `<button class="btn btn-danger btn-sm btn-lock" data-id="${user.id}" data-status="0">
+                    ? `<button class="btn btn-danger btn-sm btn-lock" data-id="${user.id}" data-status="1">
                             <i class="fa fa-lock p-0"></i>
                     </button>`
-                    : `<button class="btn btn-success btn-sm btn-lock" data-id="${user.id}" data-status="1">
+                    : `<button class="btn btn-success btn-sm btn-lock" data-id="${user.id}" data-status="0">
                             <i class="fa fa-unlock p-0"></i>
                     </button>`;
 
@@ -78,6 +83,7 @@ function loadUsers(page = 0, size = pageSize) {
             $('#next-page').prop('disabled', res.data.pagination.currentPage >= res.data.pagination.totalPages - 1);
         },
         error: function(err) {
+            Swal.close();
             console.error('Không thể tải danh sách user:', err);
         }
     });
@@ -86,19 +92,19 @@ function loadUsers(page = 0, size = pageSize) {
 $('#prev-page').on('click', function() {
     if (currentPage > 0) {
         currentPage--;
-        loadUsers(currentPage, pageSize);
+        loadUsers(currentPage, pageSize, searchText);
     }
 });
 
 $('#next-page').on('click', function() {
     currentPage++;
-    loadUsers(currentPage, pageSize);
+    loadUsers(currentPage, pageSize, searchText);
 });
 
 $('#page-size-selector').on('change', function() {
     pageSize = parseInt($(this).val());
     currentPage = 0;
-    loadUsers(currentPage, pageSize);
+    loadUsers(currentPage, pageSize, searchText);
 });
 
 function addUser() {
@@ -108,12 +114,25 @@ function addUser() {
         password: $('#password').val(),
         address_name: $('#address_name').val()
     };
+    Swal.fire({
+        title: 'Đang xử lý...',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        onOpen: () => {
+            swal.showLoading();
+        }
+    });
 
     $.ajax({
         url: '/api/user/create',
         type: 'POST',
         data: data,
+        headers: {
+            'Authorization': sessionStorage.getItem('token')
+        },
         success: function(res) {
+            Swal.close();
             Swal.fire({
                 icon: 'success',
                 title: 'Thành công!',
@@ -125,6 +144,7 @@ function addUser() {
             loadUsers();
         },
         error: function(err) {
+            Swal.close();
             Swal.fire({
                 icon: 'error',
                 title: 'Thất bại!',
@@ -137,7 +157,7 @@ function addUser() {
 }
 
 $(document).ready(function() {
-    loadUsers();
+    loadUsers(currentPage, pageSize, searchText);
 
     $('.btn-add-user').on('click', function() {
         const htmlAdd = `
@@ -181,6 +201,9 @@ $(document).ready(function() {
         $.ajax({
             url: '/api/user/detail/' + userId,
             type: 'GET',
+            headers: {
+                'Authorization': sessionStorage.getItem('token')
+            },
             success: function(res) {
                 const htmlEdit = `
                     <div class="modal-header">
@@ -219,8 +242,8 @@ $(document).ready(function() {
                             <div class="form-group">
                                 <label>Trạng thái:</label>
                                 <select id="status_edit" name="status" class="form-control">
-                                    <option value="0" ${res.data.is_active == 1 ? 'selected' : ''}>Hoạt động</option>
-                                    <option value="1" ${res.data.is_active == 0 ? 'selected' : ''}>Đã khoá</option>
+                                    <option value="1" ${res.data.is_active == 1 ? 'selected' : ''}>Hoạt động</option>
+                                    <option value="0" ${res.data.is_active == 0 ? 'selected' : ''}>Đã khoá</option>
                                 </select>
                             </div>
                         </form>
@@ -250,10 +273,11 @@ $(document).ready(function() {
                     try {
                         Swal.fire({
                             title: 'Đang xử lý...',
-                            text: 'Vui lòng chờ trong giây lát.',
                             allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading();
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            onOpen: () => {
+                                swal.showLoading();
                             }
                         });
                         // Nếu có ảnh mới thì upload trước
@@ -265,6 +289,9 @@ $(document).ready(function() {
                                 url: '/api/user/upload-avatar/' + userId,
                                 type: 'PUT',
                                 data: formData,
+                                headers: {
+                                    'Authorization': sessionStorage.getItem('token')
+                                },
                                 processData: false,
                                 contentType: false
                             });
@@ -277,17 +304,20 @@ $(document).ready(function() {
                             userId: userId,
                             username: $('#username_edit').val(),
                             email: $('#email_edit').val(),
-                            address_name: $('#address_name_edit').val(),
-                            is_active: $('#status_edit').val(),
+                            address: $('#address_name_edit').val(),
+                            isActive: $('#status_edit').val(),
                             avatar_url: avatarUrl
                         };
 
                         const updateRes = await $.ajax({
                             url: '/api/user/update-user',
                             type: 'PUT',
-                            data: dataEdit
+                            data: dataEdit,
+                            headers: {
+                                'Authorization': sessionStorage.getItem('token')
+                            }
                         });
-
+                        Swal.close();
                         Swal.fire({
                             icon: 'success',
                             title: updateRes.message || 'Cập nhật thành công!',
@@ -296,9 +326,10 @@ $(document).ready(function() {
                         });
 
                         $('#exampleModalCenter').modal('hide');
-                        loadUsers();
+                        loadUsers(currentPage, pageSize, searchText);
 
                     } catch (err) {
+                        Swal.close();
                         Swal.fire({
                             icon: 'error',
                             title: 'Lỗi!',
@@ -315,8 +346,91 @@ $(document).ready(function() {
         });
     });
 
+    $(document).on('click', '.btn-lock', function() {
+        const userId = $(this).data('id');
+        const status = $(this).data('status');
+        const titleText = status == 1 ? 'Xác nhận khóa tài khoản?' : 'Xác nhận mở khóa tài khoản?';
+        Swal.fire({
+            title: titleText,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy bỏ',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/api/user/detail/' + userId,
+                    type: 'GET',
+                    headers: {
+                        'Authorization': sessionStorage.getItem('token')
+                    },
+                    success: function(res) {
+                        const data = {
+                            userId: userId,
+                            username: res.data.username,
+                            isActive: res.data.is_active === 0 ? 1 : 0
+                        };
+
+                        $.ajax({
+                            url: '/api/user/update-user',
+                            type: 'PUT',
+                            headers: {
+                                'Authorization': sessionStorage.getItem('token')
+                            },
+                            data: data,
+                            success: function(res) {
+                                const message =res.data.is_active == 1
+                                        ? 'Mở khóa tài khoản thành công!'
+                                        : 'Khóa tài khoản thành công!';
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                loadUsers(currentPage, pageSize, searchText);
+                            },
+                            error: function(err) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi!',
+                                    text: 'Không thể thay đổi trạng thái người dùng.',
+                                });
+                                console.error('Không thể khóa user:', err);
+                            }
+                        });
+                    },
+                    error: function(err) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Không thể lấy thông tin người dùng.',
+                        });
+                        console.error('Không thể lấy thông tin user:', err);
+                    }
+                });
+            }
+        });
+    });
+
     $(document).on('click', '#btn_save_add', function() {
         addUser();
+    });
+
+    $(document).on('click', '#kt_search_4', function(e) {
+        e.preventDefault();
+
+        const searchText = $('#input_search').val().replace(/\s+/g, '');
+        currentPage = 0;
+        loadUsers(currentPage, pageSize, searchText);
+    });
+
+    $(document).on('click', '#kt_reset_4', function(e) {
+        e.preventDefault();
+        $('#input_search').val('');
+        searchText = '';
+        loadUsers(currentPage, pageSize, searchText);
     });
 
 });
