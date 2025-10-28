@@ -41,71 +41,72 @@ class BaseService {
      * @param {Array} columns - Các cột cần lấy (default: *)
      * @returns {Promise<Object>} - { data, pagination }
      */
-    async paginate(page = 0, limit = 10, conditions = {}, orderBy = 'id',sort='DESC', columns = ['*']) {
-        try {
-            console.log(limit);
-            
-            const offset = page * limit;
-            console.log(offset);
-            
-            const columnStr = columns.join(', ');
-            let query = `SELECT ${columnStr} FROM ${this.tableName}`;
-            let countQuery = `SELECT COUNT(*) as total FROM ${this.tableName}`;
-            const params = [];
-
-            if (conditions.$or && Array.isArray(conditions.$or)) {
-                const orClauses = conditions.$or
-                    .map(cond => {
-                        const key = Object.keys(cond)[0];
-                        return `LOWER(${key}) LIKE ?`;
-                    })
-                    .join(' OR ');
-                
-                query += ` WHERE ${orClauses}`;
-                countQuery += ` WHERE ${orClauses}`;
-        
-                // ép searchText về chữ thường và thêm wildcard
-                const values = conditions.$or.map(cond => {
-                    const value = Object.values(cond)[0];
-                    return `%${value.toLowerCase()}%`;
-                });
-                params.push(...values);
-            }else{
-                query += ` ORDER BY ${orderBy} ${sort} LIMIT ? OFFSET ?`;
-                params.push(limit, offset);
-            }
-            
-            // Thêm ORDER BY và LIMIT
-            
-            // Lấy tổng số bản ghi
-            const [countResult] = await database.pool.query(countQuery, params);
-            const total = countResult[0].total;
-
-
-            // Lấy dữ liệu
-            const [rows] = await database.pool.query(query, [...params, limit, offset]);
-
-            // Tính toán pagination
-            const totalPages = Math.ceil(total / limit);
-
-            
-            return {
-                content: rows,
-                pagination: {
-                    currentPage: page,
-                    totalPages: totalPages,
-                    totalElements: total,
-                    size: limit,
-                    // hasNextPage: (page+1) <= totalPages,
-                    // hasPrevPage: page > 1
-                }
-            };
-        } catch (error) {
-            throw error;
-        }
-    }
 
     // dùng cho phân trang phức tạp trả về query 
+    
+    async paginate(page = 0, limit = 10, conditions = {}, orderBy = 'id', sort = 'DESC', columns = ['*']) {
+    try {
+        const offset = page * limit;
+        const columnStr = columns.join(', ');
+        let query = `SELECT ${columnStr} FROM ${this.tableName}`;
+        let countQuery = `SELECT COUNT(*) as total FROM ${this.tableName}`;
+        const params = [];
+
+        const whereClauses = [];
+
+        // ✅ 1. Điều kiện LIKE ($or)
+        if (conditions.$or && Array.isArray(conditions.$or)) {
+            const orClauses = conditions.$or
+                .map(cond => {
+                    const key = Object.keys(cond)[0];
+                    return `LOWER(${key}) LIKE ?`;
+                })
+                .join(' OR ');
+
+            whereClauses.push(`(${orClauses})`);
+            const values = conditions.$or.map(cond => `%${Object.values(cond)[0].toLowerCase()}%`);
+            params.push(...values);
+        }
+
+        // ✅ 2. Các điều kiện chính xác (=)
+        for (const [key, value] of Object.entries(conditions)) {
+            if (key !== '$or') {
+                whereClauses.push(`${key} = ?`);
+                params.push(value);
+            }
+        }
+
+        // ✅ 3. Kết hợp WHERE (nếu có)
+        if (whereClauses.length > 0) {
+            query += ` WHERE ${whereClauses.join(' AND ')}`;
+            countQuery += ` WHERE ${whereClauses.join(' AND ')}`;
+        }
+
+        // ✅ 4. Thêm ORDER BY, LIMIT, OFFSET
+        query += ` ORDER BY ${orderBy} ${sort} LIMIT ? OFFSET ?`;
+        params.push(limit, offset);
+
+        // ✅ 5. Lấy tổng số bản ghi
+        const [countResult] = await database.pool.query(countQuery, params.slice(0, -2));
+        const total = countResult[0].total;
+
+        // ✅ 6. Lấy dữ liệu trang hiện tại
+        const [rows] = await database.pool.query(query, params);
+        
+        return {
+            content: rows,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(total / limit),
+                totalElements: total,
+                size: limit
+            }
+        };
+    } catch (error) {
+        throw error;
+    }
+}
+
     async paginateRawQuery(baseQuery,page=0,limit=10,params=[]){
         try {
             const offset = page * limit;

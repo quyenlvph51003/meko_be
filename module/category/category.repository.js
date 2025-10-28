@@ -17,18 +17,27 @@ class CategoryRepository extends BaseService{
     async getCategoryRepoById(id){
         return await this.findById(id);
     }
-    async getListCategoryRepo(){
-        return await this.getAll();
+    async getListCategoryRepo(isActive){
+        return await this.getAll({is_active:isActive});
     }
-    async searchCategoryRepo(searchText,page,size,sort){
-        const conditions={};
-        if(searchText){
-            conditions['$or'] = [
-                { name: searchText },
-            ];
-        }
-        return await this.paginate(Number(page),Number(size),conditions,'id',sort);
+   async searchCategoryRepo(searchText, page, size, sort, isActive) {
+    const conditions = {};
+
+    // 🔍 Nếu có từ khoá tìm kiếm
+    if (searchText) {
+        conditions['$or'] = [
+            { name: searchText },
+        ];
     }
+
+    // ⚙️ Nếu có lọc trạng thái
+    if (isActive !== undefined && isActive !== null && isActive !== '') {
+        conditions.is_active = Number(isActive);
+    }
+
+    return await this.paginate(Number(page), Number(size), conditions, 'id', sort);
+    }
+
 }
 
 export default new CategoryRepository();

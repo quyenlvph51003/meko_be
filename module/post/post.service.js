@@ -7,7 +7,7 @@ import PostCategoriesRepository from '../post_categories/post.categories.reposit
 import Category from '../category/category.repository.js';
 import {PostStatus} from '../../utils/enum.common.js';
 import ValidateUtils from '../../utils/validate_utils.js';
-
+import Violation from '../category_violation/category.violation.repository.js';
 
 class PostService{
     async createPost(post){
@@ -200,7 +200,7 @@ class PostService{
     }
 
 
-    async updateStatusPostService(postId,status){
+    async updateStatusPostService(postId,status,reasonReject,reasonViolation,violationId){
 
         //khi có thanh toán thì check lại 
         // có 2 case reject thì chỉnh sửa lại rồi lại sang pending 
@@ -218,17 +218,27 @@ class PostService{
         const currentStatus=postExists.status;
         
         const VALID_TRANSITIONS = {
-            [PostStatus.PENDING]: [PostStatus.APPROVED, PostStatus.REJECTED, PostStatus.VIOLATION],
+            [PostStatus.PENDING]: [PostStatus.APPROVED, PostStatus.REJECTED],
             [PostStatus.APPROVED]: [PostStatus.HIDDEN, PostStatus.VIOLATION],
             [PostStatus.REJECTED]: [PostStatus.PENDING], // cho phép gửi lại
             [PostStatus.HIDDEN]: [PostStatus.APPROVED],
             [PostStatus.VIOLATION]: [], // không cho đổi nữa
         };
-         const allowedNext = VALID_TRANSITIONS[currentStatus] || [];
-         if (!allowedNext.includes(status)) {
-            throw new Error(`Invalid transition from ${currentStatus} to ${status}`);
-         }
-        return await PostRepository.updateStatusPostRepo(postId,status);
+        const allowedNext = VALID_TRANSITIONS[currentStatus] || [];
+        if (!allowedNext.includes(status)) {
+           throw new Error(`Invalid transition from ${currentStatus} to ${status}`);
+        }
+        const violation=await Violation.getDetailViolationRepo(violationId) ;
+        if(!violation && status==PostStatus.VIOLATION){
+            throw new Error('Violation not found');
+        }
+        const post={
+            status:status,
+            reason_reject:status === PostStatus.REJECTED ? reasonReject : null,
+            reason_violation:status === PostStatus.VIOLATION ? reasonViolation : null,
+            violation_id:status === PostStatus.VIOLATION ? violationId : null
+        }
+        return await PostRepository.updateStatusPostRepo(postId,post);
     }
 
 }

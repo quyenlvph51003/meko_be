@@ -22,13 +22,19 @@ app.set('views', path.join(__dirname, 'views')); // Thư mục chứa file .ejs
 // ✨ [2] Cấu hình phục vụ file tĩnh (CSS, JS, ảnh,...)
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+///api route
 import authRoute from './module/auth/auth.route.js';
 import userRoute from './module/users/user.route.js';
 import provinceRoute from './module/address/provinces/province.route.js';
 import wardRoute from './module/address/wards/ward.route.js';
 import postRoute from './module/post/post.route.js';
 import categoryRoute from './module/category/category.route.js';  
+import violationRoute from './module/category_violation/category.violation.route.js';
+
+///web route
 import webRoute from './routes/web.routes.js';
+
 testConnection.testConnection();
 
 // Middleware
@@ -45,6 +51,9 @@ app.use('/api/province',provinceRoute);
 app.use('/api/ward',wardRoute);
 app.use('/api/post',postRoute);
 app.use('/api/category',categoryRoute);
+app.use('/api/violation',violationRoute);
+
+///web route
 app.use('/admin', webRoute);
 
 app.use((req,res,next)=>{

@@ -9,4 +9,5 @@ router.put('/update/:id',Middleware.authenticate,upload.single('avatar'),Categor
 router.get('/detail/:id',CategoryController.getDetailCategoryController);
 router.get('/list',CategoryController.getListCategoryController);
 router.get('/search',Middleware.authenticate,CategoryController.searchCategoryController);
+router.put('/update-is-active/:id',Middleware.authenticate,CategoryController.updateIsActiveController);
 export default router;

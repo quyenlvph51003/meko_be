@@ -56,8 +56,8 @@ class PostRepository extends BaseService {
         return result;
     }
 
-    async updateStatusPostRepo(postId,status){
-        return await this.updateWhere({id:postId},{status:status});
+    async updateStatusPostRepo(postId,post){
+        return await this.updateWhere({id:postId},post);
     }
 
 }
