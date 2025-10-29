@@ -1,4 +1,4 @@
-import ResponseUtils from '../../utils/response_utils';
+import ResponseUtils from '../../utils/response_utils.js';
 
 
 const validationCreateReport=(req,res,next)=>{

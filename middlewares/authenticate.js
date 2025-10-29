@@ -21,8 +21,10 @@ const authenticate = (req, res, next) => {
         
         // Gắn thông tin user vào request
         req.user = decoded;
+        
         next();
     } catch (error) {
+
         if (error.name === 'JsonWebTokenError') {
             return res.status(401).json({ 
                 datetime: new Date(),

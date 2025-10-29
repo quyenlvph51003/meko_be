@@ -31,6 +31,7 @@ import wardRoute from './module/address/wards/ward.route.js';
 import postRoute from './module/post/post.route.js';
 import categoryRoute from './module/category/category.route.js';  
 import violationRoute from './module/category_violation/category.violation.route.js';
+import reportRoute from './module/report/report.route.js';
 
 ///web route
 import webRoute from './routes/web.routes.js';
@@ -52,7 +53,7 @@ app.use('/api/ward',wardRoute);
 app.use('/api/post',postRoute);
 app.use('/api/category',categoryRoute);
 app.use('/api/violation',violationRoute);
-
+app.use('/api/report',reportRoute);
 ///web route
 app.use('/admin', webRoute);
 

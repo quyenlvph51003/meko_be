@@ -14,6 +14,7 @@ class PostService{
         const userId=post.userId;
         const provinceCode=post.provinceCode;
         const wardCode=post.wardCode;
+        const phoneNumber=post.phoneNumber;
         const images=post.images;
         const categories=post.categories;
 
@@ -46,6 +47,7 @@ class PostService{
             address:post.address,
             price:post.price,
             expired_at: expiredAtFormatted,
+            phone_number:phoneNumber
         }
         const postResult=await PostRepository.createPostRepo(postSave);
         if(!postResult) return;
@@ -90,6 +92,7 @@ class PostService{
         const description=post.description;
         const address=post.address;
         const price=post.price;
+        const phoneNumber=post.phoneNumber;
         const images=post.images;
         const categories=post.categories;
         const wardCode=post.wardCode;
@@ -114,7 +117,8 @@ class PostService{
             address:address,
             price:price,
             ward_code:wardCode,
-            province_code:provinceCode
+            province_code:provinceCode,
+            phone_number:phoneNumber
         }
 
         // nếu truyền lên request thì xoá và lưu bản ghi mới
