@@ -6,3 +6,10 @@ export const PostStatus = Object.freeze({
   VIOLATION: 'VIOLATION', // vi phạm
   HIDDEN: 'HIDDEN'        // ẩn tin
 });
+
+
+export const ReportStatus=Object.freeze({
+  PENDING:'PENDING',
+  APPROVED:'APPROVED',
+  REJECTED:'REJECTED'
+})

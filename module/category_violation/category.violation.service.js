@@ -4,12 +4,12 @@ class CategoryViolationService{
     async createCategoryViolationService(name){
         return await ViolationRepo.createCategoryViolationRepo(name);
     }
-    async updateCategoryViolationService(name,violationId){
+    async updateCategoryViolationService(name,violationId,isActive){
         const violation= await ViolationRepo.getDetailViolationRepo(violationId);
         if(!violation){
            throw new Error("Not found violation");
         }    
-        await ViolationRepo.updateCategoryViolationRepo(name,violationId);
+        await ViolationRepo.updateCategoryViolationRepo(name,violationId,isActive??violation.is_active);
         return ViolationRepo.getDetailViolationRepo(violationId);
     }
     async deleteCategoryViolationService(violationId){
@@ -19,8 +19,8 @@ class CategoryViolationService{
         }    
         return await ViolationRepo.deleteCategoryViolationRepo(violationId);
     }
-    async getAllViolationService(){
-        return await ViolationRepo.getAllViolationrepo();
+    async getAllViolationService(isActive){
+        return await ViolationRepo.getAllViolationrepo(isActive);
     }
     async getDetailViolationService(violationId){
         const violation= await ViolationRepo.getDetailViolationRepo(violationId);

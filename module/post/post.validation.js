@@ -1,6 +1,6 @@
 import { PostStatus } from '../../utils/enum.common.js';
 import ResponseUtils from '../../utils/response_utils.js';
-
+import ValidateUtils from '../../utils/validate_utils.js';
 const validatonCreatePost=(req,res,next)=>{
     // Kiểm tra field data
     console.log('cascsa ');
@@ -16,7 +16,7 @@ const validatonCreatePost=(req,res,next)=>{
         return ResponseUtils.validationErrorResponse(res,'Dữ liệu không đúng định dạng JSON');
     }
     
-    const {title, description, categories, userId, wardCode, provinceCode, address, price} = data;
+    const {title, description, categories, userId, wardCode, provinceCode, address, price, phoneNumber} = data;
 
     if(!title){
         return ResponseUtils.validationErrorResponse(res,'Tiêu đề không được để trống');
@@ -50,7 +50,9 @@ const validatonCreatePost=(req,res,next)=>{
     if(!price || isNaN(Number(price))){
         return ResponseUtils.validationErrorResponse(res,'Giá không hợp lệ');
     }
-    
+    if(!phoneNumber || !ValidateUtils.isValidVietnamPhone(phoneNumber)){
+        return ResponseUtils.validationErrorResponse(res,'Số điện thoại không hợp lệ');
+    }
     // Gán data đã parse vào req để controller sử dụng
     req.body.parsedData = data;
     
@@ -69,7 +71,7 @@ const validationUpdatePost=(req,res,next)=>{
         return ResponseUtils.validationErrorResponse(res,'Dữ liệu không đúng định dạng JSON');
     }
     
-    const {title, description, categories, wardCode, provinceCode, address, price} = data;
+    const {title, description, categories, wardCode, provinceCode, address, price, phoneNumber} = data;
     
     if(!title){
         return ResponseUtils.validationErrorResponse(res,'Tiêu đề không được để trống');
@@ -95,6 +97,9 @@ const validationUpdatePost=(req,res,next)=>{
         return ResponseUtils.validationErrorResponse(res, 'Danh sách danh mục không hợp lệ hoặc trống');
     }
     
+    if(!phoneNumber || !ValidateUtils.isValidVietnamPhone(phoneNumber)){
+        return ResponseUtils.validationErrorResponse(res,'Số điện thoại không hợp lệ');
+    }
     // Gán data đã parse vào req để controller sử dụng
     req.body.parsedData = data;
     

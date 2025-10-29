@@ -10,16 +10,16 @@ class CategoryViolationRepository extends BaseService{
         return await this.create({name});
     }
 
-    async updateCategoryViolationRepo(name,violationId){
-        return await this.updateWhere({id:violationId},{name});
+    async updateCategoryViolationRepo(name,violationId,isActive){
+        return await this.updateWhere({id:violationId},{name,is_active:isActive});
     }
 
     async deleteCategoryViolationRepo(violationId){
         return await this.deleteWhere({id:violationId});
     }
 
-    async getAllViolationrepo(){
-        return await this.getAll();
+    async getAllViolationrepo(isActive){
+        return await this.getAll({is_active:isActive});
     }
 
     async getDetailViolationRepo(violationId){

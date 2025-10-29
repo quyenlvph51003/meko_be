@@ -16,7 +16,8 @@ const createViolationController=async(req,res)=>{
 const updateViolationController=async(req,res)=>{
     try{
         const name=req.body.name;
-        const result=await ViolationService.updateCategoryViolationService(name,req.params.id);
+        const isActive=req.body.isActive;
+        const result=await ViolationService.updateCategoryViolationService(name,req.params.id,isActive);
         return ReponseUtils.successResponse(res,result,'Cập nhật danh mục vi phạm thành công');
     }catch(error){
         if(error.message==='Not found violation'){
@@ -51,7 +52,7 @@ const getDetailViolationController=async(req,res)=>{
 
 const getListViolationController=async(req,res)=>{
     try{
-        const result=await ViolationService.getAllViolationService();
+        const result=await ViolationService.getAllViolationService(req.query.isActive);
         return ReponseUtils.successResponse(res,result,'Lấy danh sách danh mục vi phạm thành công');
     }catch(error){
         console.log(error);

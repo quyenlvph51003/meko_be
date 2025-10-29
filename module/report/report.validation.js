@@ -1,5 +1,5 @@
-import ResponseUtils from '../../utils/response_utils';
-
+import ResponseUtils from '../../utils/response_utils.js';
+import { ReportStatus } from '../../utils/enum.common.js';
 
 const validationCreateReport=(req,res,next)=>{
     const {postId,reporterUserId,reason,violationId}=req.body;
@@ -18,5 +18,19 @@ const validationCreateReport=(req,res,next)=>{
     }
     next();
 }
+const validationUpdateStatusReport=(req,res,next)=>{
+    const postId=req.query.postId;
+    const {status}=req.body;
+    if(!postId){
+        return ResponseUtils.validationErrorResponse(res,'ID bài viết không được để trống');
+    }
+    if(!status){
+        return ResponseUtils.validationErrorResponse(res,'Trạng thái không được để trống');
+    }
+    if(status != ReportStatus.APPROVED && status != ReportStatus.REJECTED){
+        return ResponseUtils.validationErrorResponse(res,'Trạng thái không hợp lệ');
+    }
+    next();
+}
 
-export default {validationCreateReport}
+export default {validationCreateReport,validationUpdateStatusReport}
