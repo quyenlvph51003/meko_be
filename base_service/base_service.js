@@ -178,6 +178,7 @@ class BaseService {
                 .join(' AND ');
             const query = `SELECT ${columnStr} FROM ${this.tableName} WHERE ${whereClause} LIMIT 1`;
             const [rows] = await database.pool.query(query, Object.values(conditions));
+            
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw error;

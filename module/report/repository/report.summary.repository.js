@@ -20,6 +20,12 @@ class ReportSummaryRepository extends BaseService{
     async getAllByPostId(postId){
         return this.getAll({post_id:postId});
     }
+    async updateStatusReportSummaryRepo(postId,{status}){
+        return this.updateWhere({post_id:postId},{status});
+    }
+    async getReportSummaryById(id){
+        return this.findOne({id});
+    }
 }
 
 export default new ReportSummaryRepository();

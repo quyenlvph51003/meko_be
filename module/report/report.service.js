@@ -4,6 +4,8 @@ import UserRepo from "../users/user.repository.js";
 import PostRepo from "../post/post.repository.js";
 import ViolationRepo from "../category_violation/category.violation.repository.js";
 import reportSummaryRepository from "./repository/report.summary.repository.js";
+import { ReportStatus } from "../../utils/enum.common.js";
+import { PostStatus } from "../../utils/enum.common.js";
 
 class ReportService{
     constructor(){
@@ -38,6 +40,54 @@ class ReportService{
         }
 
         const report=await this.reportRepository.createReportRepository({reportSummaryId:reportSummary.id??reportSummary.insertId,reporterUserId,reason,violationId});
+        return true;
+    }
+
+    async updateStatusReport(postId,status,violationId,reason){
+        const reportExists=await reportSummaryRepository.getReportSummaryByPostId(postId);
+        if(!reportExists){
+            throw new Error('Report Not Found');
+        }
+
+        // validate trạng thái
+        const VALID_TRANSITIONS={
+            [ReportStatus.PENDING]: [ReportStatus.APPROVED, ReportStatus.REJECTED],
+            [ReportStatus.APPROVED]: [],
+            [ReportStatus.REJECTED]: [],
+        };
+
+        const currentStatus=reportExists.status;
+        const allowedNext = VALID_TRANSITIONS[currentStatus] || [];
+        if (!allowedNext.includes(status)) {
+           throw new Error(`Invalid transition from ${currentStatus} to ${status}`);
+        }
+
+        // nếu là approved thì update status post
+        if(currentStatus===ReportStatus.PENDING && status===ReportStatus.APPROVED){
+            if(!violationId){
+                throw new Error('Violation ID is required');
+            }
+            
+            if(!reason){
+                throw new Error('Reason is required');
+            }
+
+            const violation=await ViolationRepo.getDetailViolationRepo(violationId);
+            if(!violation){
+                throw new Error('Violation Not Found');
+            }
+
+            const post=await PostRepo.getDetailByPostId(postId);
+            if(!post){
+                throw new Error('Post Not Found');
+            }
+            if(post.status!=PostStatus.APPROVED){
+                throw new Error('Post is not approved');
+            }
+            await PostRepo.updateStatusPostRepo(postId,{status:PostStatus.VIOLATION,violation_id:violationId,reason_violation:reason});
+        }
+
+        await reportSummaryRepository.updateStatusReportSummaryRepo(postId,{status});
         return true;
     }
 }
