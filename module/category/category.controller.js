@@ -25,13 +25,13 @@ const updateCategoryController=async(req,res)=>{
         const avatar=req.file.path;
         const id=req.params.id;
         if(!id){
-            return ReponseUtils.validationErrorResponse(res,'ID danh mục không được để trống');
+            return ReponseUtils.notFoundResponse(res,'ID danh mục không được để trống');
         }
         if(!name){
-            return ReponseUtils.validationErrorResponse(res,'Tên danh mục không được để trống');
+            return ReponseUtils.notFoundResponse(res,'Tên danh mục không được để trống');
         }
         if(!avatar){
-            return ReponseUtils.validationErrorResponse(res,'Ảnh không được để trống');
+            return ReponseUtils.notFoundResponse(res,'Ảnh không được để trống');
         }
         await CategoryService.updateCategoryService({name:name,avatar:avatar,id:id});
         const result=await CategoryService.getDetailCategoryService(id);
