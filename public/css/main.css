@@ -1,0 +1,18 @@
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-wrapper table {
+    min-width: 1200px; /* tùy chỉnh để bật scroll khi bảng quá rộng */
+    border-collapse: collapse;
+}
+
+.nowrap-table td,
+.nowrap-table th {
+    white-space: nowrap;   /* Không xuống dòng */
+}
+
+.nowrap-table {
+    table-layout: auto;    /* Cho phép bảng co giãn theo nội dung */
+}
