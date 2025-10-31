@@ -37,6 +37,8 @@ class ReportRepository extends BaseService{
             rs.total_reports,
             p.id AS post_id,
             p.title,
+            u.username,
+            p.user_id,
             rs.status,
             -- reports: mảng JSON object (user + name + reason + created_at)
             (
@@ -73,6 +75,7 @@ class ReportRepository extends BaseService{
             ) AS images
             FROM report_summary rs
             LEFT JOIN post p ON p.id = rs.post_id
+            LEFT JOIN users u ON u.id = p.user_id
             -- không join report/image/category trực tiếp để tránh nhân bản
             WHERE ${whereClauseStr}
             GROUP BY rs.id, rs.total_reports, rs.status, p.id, p.title

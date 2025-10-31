@@ -8,6 +8,7 @@ import Category from '../category/category.repository.js';
 import {PostStatus} from '../../utils/enum.common.js';
 import ValidateUtils from '../../utils/validate_utils.js';
 import Violation from '../category_violation/category.violation.repository.js';
+import PostHistoryRepo from "../post_history/post.history.repository.js";
 
 class PostService{
     async createPost(post){
@@ -77,10 +78,23 @@ class PostService{
         return post;
     }
 
-    async getDetailByPostId(postId){
+    async getDetailByPostId(postId,userId){
         const post=await PostRepository.findById(postId);
         if(!post){
             throw new Error('Post not found');
+        }
+        if(userId){
+            const userExists=await UserRepository.findById(userId)
+            if(!userExists){
+                throw new Error('User not found');
+            }
+            const postHistory=await PostHistoryRepo.getPostHistoryRepo(postId,userId);
+            if(!postHistory & post.status == PostStatus.APPROVED){
+                await PostHistoryRepo.createPostHistoryRepo({
+                    post_id:postId,
+                    user_id:userId
+                })
+            }
         }
         return await PostRepository.getDetailByPostId(postId);
     }
