@@ -4,17 +4,15 @@ let searchText = '';
 
 function loadCategories(page = 0, size = pageSize, searchText = '') {
     $.ajax({
-        url: '/api/category/search',
-        method: 'GET',
+        url: `/api/category/search?page=${page}&size=${size}`,
+        method: 'POST',
         contentType: 'application/json',
         headers: {
             'Authorization': sessionStorage.getItem('token')
         },
-        data:{
-            page: page,
-            size: size,
+        data: JSON.stringify({
             searchText: searchText
-        },
+        }),
         success: function(res) {
             const tbody = $('#kt_datatable1_body');
             tbody.empty();

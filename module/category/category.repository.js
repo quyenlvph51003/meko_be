@@ -22,7 +22,11 @@ class CategoryRepository extends BaseService{
     }
    async searchCategoryRepo(searchText, page, size, sort, isActive) {
     const conditions = {};
-
+    console.log(page);
+    console.log(size);
+    console.log(sort);
+    console.log(isActive);
+    
     // 🔍 Nếu có từ khoá tìm kiếm
     if (searchText) {
         conditions['$or'] = [
