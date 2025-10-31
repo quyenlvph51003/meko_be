@@ -90,6 +90,9 @@ class ReportService{
         await reportSummaryRepository.updateStatusReportSummaryRepo(postId,{status});
         return true;
     }
+    async searchReport(searchText,status,page,size){
+        return await this.reportRepository.searchReportRepo(searchText,status,page,size);
+    }
 }
 
 export default new ReportService();

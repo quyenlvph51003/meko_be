@@ -32,5 +32,12 @@ const validationUpdateStatusReport=(req,res,next)=>{
     }
     next();
 }
+const validationSearchReport=(req,res,next)=>{
+    const status=req.body.status;
+    if(status != ReportStatus.APPROVED && status != ReportStatus.REJECTED && status != ReportStatus.PENDING){
+        return ResponseUtils.validationErrorResponse(res,'Trạng thái không hợp lệ');
+    }
+    next();
+}
 
-export default {validationCreateReport,validationUpdateStatusReport}
+export default {validationCreateReport,validationUpdateStatusReport,validationSearchReport}

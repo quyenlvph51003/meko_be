@@ -67,7 +67,8 @@ const updatePostByIdController=async(req,res,next)=>{
 const getDetailByPostIdController=async(req,res,next)=>{
     try{
         const postId=req.params.postId;
-        const post=await PostService.getDetailByPostId(postId);
+        const userId=req.query.userId;
+        const post=await PostService.getDetailByPostId(postId,userId);
         
         post.images=post.images?post.images.split(','):[];
         post.categories=post.categories?post.categories.split(','):[];
@@ -76,6 +77,9 @@ const getDetailByPostIdController=async(req,res,next)=>{
     }catch(error){
         if(error.message==='Post not found'){
             return ResponseUtils.notFoundResponse(res,'Không tìm thấy bài viết');
+        }
+        if(error.message==='User not found'){
+            return ResponseUtils.notFoundResponse(res,'Người dùng không tồn tại');
         }
         console.log(error);
         return ResponseUtils.serverErrorResponse(res);
