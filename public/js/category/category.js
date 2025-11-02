@@ -151,7 +151,7 @@ $(document).ready(function() {
             <div class="modal-body">
                 <form id="categoryForm">
                     <div class="form-group">
-                        <label>Hình ảnh:</label>
+                        <label>Hình ảnh</label>
                         <div class="d-flex justify-content-center">
                             <input id="avatar_category" type="file" name="avatar" accept="image/*" class="form-control-file">
                         </div>

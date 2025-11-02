@@ -29,18 +29,21 @@ function loadPost(page=0, size=pageSize,searchText = '') {
                 tbody.append(`
                     <tr style="line-height: 100px;">
                         <td>${post.id}</td>
-                        <td>${post.userId}</td>
+                        <td>${post.userNamePoster}</td>
                         <td>
-                            ${
-                                (post.categories || [])
-                                .map((cat, index) => {
-                                    const colors = ['success', 'danger', 'warning', 'info', 'primary']; // 5 màu
-                                    const color = colors[index % colors.length]; // lặp lại nếu >5
-                                    return `<span class="label label-${color} label-pill label-inline mr-2">${cat}</span>`;
-                                })
-                                .join(' ')
-                            }
+                            <div class="d-flex flex-column">
+                                ${
+                                    (post.categories || [])
+                                    .map((cat, index) => {
+                                        const colors = ['success', 'danger', 'warning', 'info', 'primary']; 
+                                        const color = colors[index % colors.length]; 
+                                        return `<span class="m-1 label label-${color} label-pill label-inline mr-2">${cat}</span>`;
+                                    })
+                                    .join(' ')
+                                }
+                            </div>
                         </td>
+                        <td><img style="border-radius: 16px;width:80px;height:80px;object-fit:cover;" src="${post.images[0]}" alt=""></td>
                         <td>${post.title}</td>
                         <td>${post.description}</td>
                         <td>${post.address}</td>
@@ -118,103 +121,13 @@ $('#page-size-selector').on('change', function() {
     loadPost(currentPage, pageSize, searchText);
 });
 
-function addCategory() {
-    $('#avatar_category').on('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                $('#preview_image').attr('src', e.target.result);
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    const file = $('#avatar_category')[0].files[0];
-    const formData = new FormData();
-    formData.append('avatar', file);
-    formData.append('name', $('#name_category').val());
-
-    Swal.fire({
-        title: 'Đang xử lý...',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showConfirmButton: false,
-        onOpen: () => {
-            swal.showLoading();
-        }
-    });
-    $.ajax({
-        url: '/api/category/create',
-        type: 'POST',
-        processData: false,
-        contentType: false,
-        data: formData,
-        headers: {
-            'Authorization': sessionStorage.getItem('token')
-        },
-        success: function(res) {
-            Swal.close();
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành công!',
-                text: res.message,
-                timer: 2000,
-                showConfirmButton: false
-            });
-            $('#exampleModalCenter').modal('hide');
-            loadCategories(currentPage, pageSize, searchText);
-        },
-        error: function(err) {
-            Swal.close();
-            Swal.fire({
-                icon: 'error',
-                title: 'Thất bại!',
-                text: err.responseJSON?.message || 'Không thể thêm danh mục. Vui lòng thử lại!',
-                confirmButtonText: 'Đóng'
-            });
-            console.error('Không thể thêm danh mục:', err);
-        }
-    });
-}
-
 $(document).ready(function() {
     loadPost(currentPage, pageSize);
 
-    $('.btn-add-category').on('click', function() {
-        const htmlAdd = `
-            <div class="modal-header">
-                <h5 class="modal-title">Thêm danh mục</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <i aria-hidden="true" class="ki ki-close"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="categoryForm">
-                    <div class="form-group">
-                        <label>Hình ảnh:</label>
-                        <div class="d-flex justify-content-center">
-                            <input id="avatar_category" type="file" name="avatar" accept="image/*" class="form-control-file">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Tên danh mục:</label>
-                        <input id="name_category" type="text" name="nameCategory" class="form-control" placeholder="Nhập tên danh mục" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light-primary" data-dismiss="modal">Huỷ</button>
-                <button id="btn_save_add" type="button" class="btn btn-primary btn-save-add">Thêm</button>
-            </div>
-        `;
-        $('#modalContent').html(htmlAdd);
-        $('#exampleModalCenter').modal('show');
-    });
-
-    $(document).on('click', '.btn-edit-category', function() {
-        const categoryId = $(this).data('id');
+    $(document).on('click', '.btn-edit-post', function() {
+        const postId = $(this).data('id');
         $.ajax({
-            url: '/api/category/detail/' + categoryId,
+            url: '/api/post/detail/' + postId,
             type: 'GET',
             headers: {
                 'Authorization': sessionStorage.getItem('token')
@@ -230,22 +143,56 @@ $(document).ready(function() {
                     <div class="modal-body">
                         <form id="userForm">
                             <div class="form-group text-center">
-                                <label>Hình ảnh:</label>
+                                <label>Hình ảnh</label>
                                 <div class="mb-3">
                                     ${
-                                        res.data.avatar
-                                            ? `<img id="img_category" style="width:120px;height:120px;object-fit:cover;" src="${res.data.avatar}" alt="">`
+                                        res.data.images[0]
+                                            ? `<img id="img_category" style="width:120px;height:120px;object-fit:cover;" src="${res.data.images[0]}" alt="">`
                                             : `<img style="width:120px;height:120px;object-fit:cover;" src="/img/user-default.png" alt="">`
                                     }
                                 </div>
-                                <div class="d-flex justify-content-center">
-                                    <input id="avatar_category_edit" type="file" name="avatar_category_edit" accept="image/*" class="form-control-file">
-                                </div>
                             </div>
                             <div class="form-group">
-                                <label>Tên danh mục:</label>
-                                <input value="${res.data.name}" id="name_category_edit" type="text" name="nameCategory" class="form-control" placeholder="Nhập danh mục" required>
+                                <label>Tên tác giả:</label>
+                                <input value="${res.data.userNamePoster}" type="text" class="form-control" readonly>
                             </div>
+
+                            <div class="form-group">
+                                <label>Tiêu đề:</label>
+                                <input value="${res.data.title}" type="text" class="form-control" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Mô tả:</label>
+                                <textarea class="form-control" rows="4" readonly>${res.data.description}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Giá:</label>
+                                <input value="${res.data.price}" type="text" class="form-control" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Địa chỉ:</label>
+                                <input value="${res.data.address}" type="text" class="form-control" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Số điện thoại:</label>
+                                <input value="${res.data.phoneNumber}" type="text" class="form-control" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Trạng thái:</label>
+                                <select id="status_post_edit" class="form-control">
+                                    <option value="PENDING" ${res.data.status === 'PENDING' ? 'selected' : ''}>Chờ duyệt</option>
+                                    <option value="VIOLATION" ${res.data.status === 'VIOLATION' ? 'selected' : ''}>Vi phạm</option>
+                                    <option value="APPROVED" ${res.data.status === 'APPROVED' ? 'selected' : ''}>Phê duyệt</option>
+                                    <option value="REJECTED" ${res.data.status === 'REJECTED' ? 'selected' : ''}>Từ chối</option>
+                                    <option value="HIDDEN" ${res.data.status === 'HIDDEN' ? 'selected' : ''}>Ẩn tin</option>
+                                </select>
+                            </div>
+
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -253,35 +200,78 @@ $(document).ready(function() {
                         <button id="btn_save_edit" type="button" class="btn btn-primary btn-save-add">Lưu</button>
                     </div>
                 `;
+
                 $('#modalContent').html(htmlEdit);
                 $('#exampleModalCenter').modal('show');
 
-                let fileEdit = null;
-                $('#avatar_category_edit').on('change', function(e) {
-                    fileEdit = e.target.files[0];
-                    if (fileEdit) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            $('#img_category').attr('src', e.target.result);
-                        };
-                        reader.readAsDataURL(fileEdit);
+                const status = res.data.status;
+                const $select = $('#status_post_edit');
+
+                if (status === 'VIOLATION') {
+                    // Chỉ hiển thị "Vi phạm" và khóa select
+                    $select.find('option').hide();
+                    $select.find('option[value="VIOLATION"]').show();
+                    $select.val('VIOLATION');
+                    $select.prop('disabled', true);
+                    $select.css({
+                        'appearance': 'none',          
+                        '-webkit-appearance': 'none',
+                        '-moz-appearance': 'none',
+                        'background-color': '#dc3545', 
+                        'color': 'white',         
+                        'background-image': 'none',   
+                        'cursor': 'not-allowed'        
+                    });
+                } else if (status === 'PENDING') {
+                    // Chỉ hiển thị 3 option: Chờ duyệt, Phê duyệt, Từ chối
+                    $select.find('option').hide();
+                    $select.find('option[value="PENDING"]').show();
+                    $select.find('option[value="APPROVED"]').show();
+                    $select.find('option[value="REJECTED"]').show();
+                    $select.prop('disabled', false);
+                } else if (status === 'APPROVED') {
+                    // Chỉ hiển thị 2 option: ẩn tin, phê duyệt
+                    $select.find('option').hide();
+                    $select.find('option[value="APPROVED"]').show();
+                    $select.find('option[value="HIDDEN"]').show();
+                    $select.prop('disabled', false);
+                } else if (status === 'REJECTED') {
+                    // Chỉ hiển thị 2 option: Từ chối, chờ duyệt
+                    $select.find('option').hide();
+                    $select.find('option[value="PENDING"]').show();
+                    $select.prop('disabled', false);
+                } else if (status === 'HIDDEN') {
+                    // Chỉ hiển thị 2 option: ẩn tin, phê duyệt
+                    $select.find('option').hide();
+                    $select.find('option[value="HIDDEN"]').show();
+                    $select.find('option[value="APPROVED"]').show();
+                    $select.prop('disabled', false);
+                } else {
+                    // Các trạng thái khác thì hiển thị đầy đủ, cho phép chọn
+                    $select.find('option').show();
+                    $select.prop('disabled', false);
+                }
+
+                $(document).on('change', '#status_post_edit', function () {
+                    const selected = $(this).val();
+
+                    $('#reasonContainer').remove();
+
+                    if (selected === 'REJECTED') {
+                        const reasonHtml = `
+                            <div id="reasonContainer" class="form-group mt-3">
+                                <label>Lý do từ chối:</label>
+                                <input id="reasonInput" type="text" class="form-control" placeholder="Nhập lý do..." required>
+                            </div>
+                        `;
+                        $(this).closest('.form-group').after(reasonHtml);
                     }
                 });
 
                 $(document).off('click', '#btn_save_edit').on('click', '#btn_save_edit', async  function() {
-                    const formData = new FormData();
-                    if (fileEdit) {
-                        formData.append('avatar', fileEdit);
-                    } else {
-                        // Nếu KHÔNG chọn ảnh mới → lấy ảnh cũ (URL hiện tại)
-                        const imgSrc = $('#img_category').attr('src');
-                        const blob = await fetch(imgSrc).then(res => res.blob()); // tải ảnh cũ về
-                        const fileName = imgSrc.split('/').pop(); // lấy tên file từ URL
-                        formData.append('avatar', blob, fileName); // gửi như file thật
-                    }
-                    
-                    formData.append('name', $('#name_category_edit').val());
 
+                    const status = $('#status_post_edit').val();
+                    const reason = $('#reasonInput').val() || '';
                     Swal.fire({
                         title: 'Đang xử lý...',
                         allowOutsideClick: false,
@@ -292,11 +282,12 @@ $(document).ready(function() {
                         }
                     });
                     $.ajax({
-                        url: '/api/category/update/' + categoryId,
+                        url: '/api/post/update-status/' + postId,
                         type: 'PUT',
-                        processData: false,
-                        contentType: false,
-                        data: formData,
+                        data: {
+                            status: status,
+                            reasonReject: reason
+                        },
                         headers: {
                             'Authorization': sessionStorage.getItem('token')
                         },
@@ -310,29 +301,25 @@ $(document).ready(function() {
                                 showConfirmButton: false
                             });
                             $('#exampleModalCenter').modal('hide');
-                            loadCategories(currentPage, pageSize, searchText);
+                            loadPost(currentPage, pageSize, searchText);
                         },
                         error: function(err) {
                             Swal.close();
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Thất bại!',
-                                text: err.responseJSON?.message || 'Không thể chỉnh sửa thông tin danh mục. Vui lòng thử lại!',
+                                text: err.responseJSON?.message || 'Không thể thay đổi trạng thái bài viết. Vui lòng thử lại!',
                                 confirmButtonText: 'Đóng'
                             });
-                            console.error('Không thể chỉnh sửa thông tin danh mục:', err);
+                            console.error('Không thể thay đổi trạng thái bài viết:', err);
                         }
                     });
                 });
             },
             error: function(err) {
-                console.error('Không thể lấy thông tin chi tiết danh mục:', err);
+                console.error('Không thể lấy thông tin chi tiết bài viết:', err);
             }
         });
-    });
-
-    $(document).on('click', '#btn_save_add', function() {
-        addCategory();
     });
 
     $(document).on('click', '#kt_search_4', function(e) {
