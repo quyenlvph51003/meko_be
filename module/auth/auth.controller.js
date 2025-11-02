@@ -86,8 +86,6 @@ const authController={
     async requestOtp(req,res){
         try {
             const {email}=req.body;
-            console.log(email);
-            
             await authService.requestOtpService(email);
             return ResponseUtils.successResponse(res,null,'Yêu cầu OTP thành công');
         } catch (error) {
@@ -133,6 +131,23 @@ const authController={
                 return ResponseUtils.validationErrorResponse(res,'Mật khẩu cũ không chính xác');
             }
             
+            console.log(error);
+            return ResponseUtils.serverErrorResponse(res);
+        }
+    },
+    
+    async forgotPassController(req,res){
+        try {
+            const {email,password}=req.body;
+            await authService.forgotPassService(email,password);
+            return ResponseUtils.successResponse(res,null,'Thay đổi mật khẩu thành công');
+        } catch (error) {
+            if(error.message==='Email_NOT_FOUND'){
+                return ResponseUtils.validationErrorResponse(res,'Email không tồn tại');
+            }
+            if(error.message==='OTP_EXPIRED'){
+                return ResponseUtils.validationErrorResponse(res,'Mã OTP đã hết hạn');
+            }
             console.log(error);
             return ResponseUtils.serverErrorResponse(res);
         }

@@ -1,6 +1,6 @@
 const stringCommonUtils={
     queryPostDetail:(condition)=>{
-    const whereClause = condition && condition.trim() !== '' ? `WHERE ${condition}` : '';
+        const whereClause = condition && condition.trim() !== '' ? `WHERE ${condition}` : '';
         
         return `select
                     p.id as id,

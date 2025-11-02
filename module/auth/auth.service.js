@@ -48,9 +48,6 @@ class AuthService{
     }
 
     async requestOtpService(email){
-        const { Resend } = await import('resend'); // ✅ dynamic import
-        const resend = new Resend(process.env.RESEND_API_KEY);
-
         const user=await AuthRepository.findByEmailAuthRepo(email);
         if(!user){
             throw new Error('Email_NOT_FOUND');
@@ -95,6 +92,21 @@ class AuthService{
         return user;
     }
 
+    async forgotPassService(email,password){
+        const user=await AuthRepository.findByEmailAuthRepo(email);
+        if(!user){
+            throw new Error('Email_NOT_FOUND');
+        }
+        const hashedPassword = await bcrypt.hash(password,10);
+        
+        if(user.otp_expired<Date.now()){
+            throw new Error('OTP_EXPIRED');
+        }
+        user.password=hashedPassword;
+        await AuthRepository.updateAuthRepo(user);
+        
+        return user;
+    }
 }
 
 export default new AuthService();

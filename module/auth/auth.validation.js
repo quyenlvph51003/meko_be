@@ -100,5 +100,21 @@ const validateChangePass=async(req,res,next)=>{
   next();
 }
 
-export default {validateRegister,validateLogin,validateRefreshToken,validateRequestOtp,validateVerifyOtp,validateChangePass}
+const validateForgotPass=async(req,res,next)=>{
+    const {email,password}=req.body;
+    if(!email){
+        return ResponseUtils.validationErrorResponse(res,'Email không được để trống');
+    }
+    if(!ValidEmail.isValidEmail(email)){
+        return ResponseUtils.validationErrorResponse(res,'Email không hợp lệ');
+    }
+    if(!password){
+        return ResponseUtils.validationErrorResponse(res,'Mật khẩu không được để trống');
+    }
+    if(password.length<6){
+        return ResponseUtils.validationErrorResponse(res,'Mật khẩu phải có ít nhất 6 ký tự');
+    }
+    next();
+}
+export default {validateRegister,validateLogin,validateRefreshToken,validateRequestOtp,validateVerifyOtp,validateChangePass,validateForgotPass}
 
