@@ -96,8 +96,18 @@ const userController={
             console.log(error);
             return ResponseUtils.serverErrorResponse(res);
         }
+    },
+    async getUserProfile(req,res){
+        try{
+            console.log(req.user.userId);
+            
+            const user=await userService.findByIdUser(req.user.userId);
+            return ResponseUtils.successResponse(res,user,'Lấy thông tin người dùng thành công');
+        }catch(error){
+            console.log(error);
+            return ResponseUtils.serverErrorResponse(res);
+        }
     }
-
 }
 
 export default userController;

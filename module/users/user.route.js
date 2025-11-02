@@ -10,4 +10,5 @@ router.get('/detail/:id',userController.getDetailUser);
 router.put('/upload-avatar/:id',upload.single('avatar'),userController.uploadAvatar);
 router.put('/update-user',authenticate.authenticate,UserValidation.updateUserValidation,userController.updateUserController);
 router.get('/search',UserValidation.searchUserValidation,userController.searchUserController);
+router.get('/profile',authenticate.authenticate,userController.getUserProfile);
 export default router;
