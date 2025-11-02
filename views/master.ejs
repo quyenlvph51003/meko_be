@@ -167,6 +167,18 @@
 		<!--begin::Page Scripts(used by this page)-->
 		<script src="assets/js/pages/crud/ktdatatable/base/data-ajax.js"></script>
 		<!--end::Page Scripts-->
+
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				const token = sessionStorage.getItem('token');
+
+				if (!token) {
+				// Nếu chưa có token => quay về login
+				window.location.href = '/admin/login';
+				}
+			});
+		</script>
+
 	</body>
 	<!--end::Body-->
 </html>
