@@ -145,7 +145,7 @@ class BaseService {
     async findById(id, columns = ['*'], keyColumn = 'id') {
         try {
             const columnStr = columns.join(', ');
-            const query = `SELECT ${columnStr} FROM ${this.tableName} WHERE ${keyColumn} = ?`;
+            const query = `SELECT ${columnStr} FROM ${this.tableName} WHERE ${keyColumn} = ?`
             const [rows] = await database.pool.query(query, [id]);
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
