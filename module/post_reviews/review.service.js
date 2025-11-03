@@ -46,7 +46,24 @@ class ReviewService {
         if (!review) {
             throw new Error("Review not found");
         }
+        await ReviewRepository.deleteWhere({parent_id:reviewId});
         return await ReviewRepository.deleteReview(reviewId);
+    }
+
+    async getListReview(postId){
+        const post = await Post.findById(postId);
+        if (!post) {
+            throw new Error("Post not found");
+        }
+        return await ReviewRepository.getListReviewRepo(postId);
+    }
+
+    async getListReviewByPostIdOrUserId({ userId, tab ,page=0,limit=10}) {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error("User not found");
+        }
+        return await ReviewRepository.getListByPostIdOrUserId({ userId, tab ,page,limit});
     }
 }
 

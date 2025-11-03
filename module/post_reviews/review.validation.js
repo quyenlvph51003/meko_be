@@ -28,8 +28,16 @@ const deleteReviewValidation = (req, res, next) => {
     }
     next();
 }
+const getListReviewValidation = (req, res, next) => {
+    const {postId} = req.params;
+    if(!postId){
+        return ResponseUtile.validationErrorResponse(res,"ID bài viết không được để trống");
+    }
+    next();
+}
 export default {
     createReviewValidation,
     updateReviewValidation,
-    deleteReviewValidation
+    deleteReviewValidation,
+    getListReviewValidation
 };
