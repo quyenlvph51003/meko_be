@@ -52,8 +52,6 @@ class VNPayService {
         const responseCode = query.vnp_ResponseCode; // '00' là thành công
         const orderId = query.vnp_TxnRef;
         const amount = Number(query.vnp_Amount)/100;
-        console.log(amount);
-        console.log(query.vnp_Amount);
         
         if (responseCode === '00') {
             const userId=await vnpReturnGetUserId(query);
@@ -62,7 +60,6 @@ class VNPayService {
                 throw new Error("User not found");
             }
             const wallet_balance = Number(user.wallet_balance) + Number(amount);
-            console.log(wallet_balance);
             
             await UserRepo.update(userId,{wallet_balance:wallet_balance});
             await WalletLogsRepo.create({
