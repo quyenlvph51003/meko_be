@@ -1,0 +1,10 @@
+import express from "express";
+import validation from "./payment.packages.validation.js";
+import controller from "./payment.packages.controller.js";
+import middleware from "../../middlewares/authenticate.js";
+const router = express.Router();
+router.post('/create', validation.createPaymentPackageValidation, middleware.authenticate, controller.createController);
+router.put('/update/:id', validation.updatePaymentPackageValidation, middleware.authenticate, controller.updateController);
+router.get('/:id', validation.getPaymentPackageValidation, middleware.authenticate, controller.getController);
+router.get('/', validation.getAllPaymentPackageValidation, middleware.authenticate, controller.getAllController);
+export default router;

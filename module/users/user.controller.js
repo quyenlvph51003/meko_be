@@ -107,7 +107,48 @@ const userController={
             console.log(error);
             return ResponseUtils.serverErrorResponse(res);
         }
-    }
+    },
+    async createPinWalletController(req,res){
+        try {
+            const {pinWallet,userId}=req.body;
+            const user=await userService.findByIdUser(userId);
+
+            if(!user){
+                return ResponseUtils.notFoundResponse(res,'Người dùng không tồn tại');
+            }
+            if(user.pin_wallet){
+                return ResponseUtils.validationErrorResponse(res,'Người dùng đã có mã pin');
+            }
+            const updateUser=await userService.createPinWallet(pinWallet,userId);
+            if(!updateUser){
+                return ResponseUtils.serverErrorResponse(res);
+            }
+            return ResponseUtils.successResponse(res,null,'Tạo mã pin thành công');
+        } catch (error) {
+            console.log(error);
+            return ResponseUtils.serverErrorResponse(res);
+        }
+    },
+    async updatePinWalletController(req,res){
+        try {
+            const {pinWalletNew,pinWalletOld}=req.body;
+            const {id}=req.params;
+            const updateUser=await userService.updatePinWallet(pinWalletNew,pinWalletOld,id);
+            if(!updateUser){
+                return ResponseUtils.serverErrorResponse(res);
+            }
+            return ResponseUtils.successResponse(res,null,'Cập nhật mã pin thành công');
+        } catch (error) {
+            if(error.message==='Pin wallet old not valid'){
+                return ResponseUtils.validationErrorResponse(res,'Mã pin cũ không chính xác');
+            }
+            if(error.message==='User not found'){
+                return ResponseUtils.validationErrorResponse(res,'Người dùng không tồn tại');
+            }
+            console.log(error);
+            return ResponseUtils.serverErrorResponse(res);
+        }
+    },
 }
 
 export default userController;

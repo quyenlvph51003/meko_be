@@ -35,6 +35,7 @@ import reportRoute from './module/report/report.route.js';
 import favoriteRoute from './module/post_favorite/favorite.route.js';
 import historyRoute from './module/post_history/post.history.router.js';
 import reviewRoute from './module/post_reviews/review.route.js';
+import paymentPackageRoute from './module/payment_packages/payment.packages.route.js';
 
 ///web route
 import webRoute from './routes/web.routes.js';
@@ -60,6 +61,7 @@ app.use('/api/report',reportRoute);
 app.use('/api/favorite',favoriteRoute);
 app.use('/api/history',historyRoute);
 app.use('/api/review',reviewRoute);
+app.use('/api/payment-package',paymentPackageRoute);
 ///web route
 app.use('/admin', webRoute);
 

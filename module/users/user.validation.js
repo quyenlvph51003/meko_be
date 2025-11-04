@@ -53,4 +53,39 @@ const searchUserValidation=async(req,res,next)=>{
     next();
 }
 
-export default {createUserValidation,updateUserValidation,searchUserValidation}
+const createPinWalletValidation=async(req,res,next)=>{
+    const {pinWallet,userId}=req.body;
+    if(!pinWallet){
+        return ResponseUtils.validationErrorResponse(res,'pinWallet không được để trống');
+    }
+    if(pinWallet.length!==6){
+        return ResponseUtils.validationErrorResponse(res,'pinWallet phải có 6 ký tự');
+    }
+    if(!userId){
+        return ResponseUtils.validationErrorResponse(res,'userId không được để trống');
+    }
+    next();
+}
+
+const updatePinWalletValidation=async(req,res,next)=>{
+    const {pinWalletNew,pinWalletOld}=req.body;
+    const {id}=req.params;
+    if(!pinWalletNew){
+        return ResponseUtils.validationErrorResponse(res,'pinWalletNew không được để trống');
+    }
+    if(pinWalletNew.length!==6){
+        return ResponseUtils.validationErrorResponse(res,'pinWalletNew phải có 6 ký tự');
+    }
+    if(!pinWalletOld){
+        return ResponseUtils.validationErrorResponse(res,'pinWalletOld không được để trống');
+    }
+    if(pinWalletOld.length!==6){
+        return ResponseUtils.validationErrorResponse(res,'pinWalletOld phải có 6 ký tự');
+    }
+    if(!id){
+        return ResponseUtils.validationErrorResponse(res,'id không được để trống');
+    }
+    next();
+}
+
+export default {createUserValidation,updateUserValidation,searchUserValidation,createPinWalletValidation,updatePinWalletValidation}
