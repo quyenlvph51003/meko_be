@@ -34,6 +34,7 @@ import violationRoute from './module/category_violation/category.violation.route
 import reportRoute from './module/report/report.route.js';
 import favoriteRoute from './module/post_favorite/favorite.route.js';
 import historyRoute from './module/post_history/post.history.router.js';
+import paymentPackageRoute from './module/payment_packages/payment.packages.route.js';
 
 ///web route
 import webRoute from './routes/web.routes.js';
@@ -58,6 +59,7 @@ app.use('/api/violation',violationRoute);
 app.use('/api/report',reportRoute);
 app.use('/api/favorite',favoriteRoute);
 app.use('/api/history',historyRoute);
+app.use('/api/payment-package',paymentPackageRoute);
 ///web route
 app.use('/admin', webRoute);
 

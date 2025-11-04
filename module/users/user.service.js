@@ -1,5 +1,6 @@
 
 import UserRepository from './user.repository.js';
+import bcrypt from 'bcrypt';
 function escapeRegex(text) {
     return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // escape regex special chars
   }
@@ -31,6 +32,24 @@ class UserService{
             ];
         }
         return await UserRepository.searchUserRepo(page,size,conditions,orderBy,sort);
+    }
+
+    async createPinWallet(pinWallet,userId){
+        const hashedPinWallet=await bcrypt.hash(pinWallet,10);
+        return await UserRepository.update(userId,{pin_wallet:hashedPinWallet});
+    }
+    async updatePinWallet(pinWalletNew,pinWalletOld,userId){
+        const user=await UserRepository.findById(userId);
+        const comparePinWalletOld=await bcrypt.compare(pinWalletOld,user.pin_wallet);
+
+        if(!user){
+            throw new Error('User not found');
+        }
+        if(!comparePinWalletOld){
+            throw new Error('Pin wallet old not valid');
+        }
+        const hashedPinWalletNew=await bcrypt.hash(pinWalletNew,10);
+        return await UserRepository.update(userId,{pin_wallet:hashedPinWalletNew});
     }
 
 }
