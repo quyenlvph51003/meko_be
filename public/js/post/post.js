@@ -134,21 +134,37 @@ $(document).ready(function() {
             },
             success: function(res) {
                 const htmlEdit = `
-                    <div class="modal-header">
-                        <h5 class="modal-title">Chỉnh sửa thông tin người dùng</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <i aria-hidden="true" class="ki ki-close"></i>
-                        </button>
-                    </div>
                     <div class="modal-body">
                         <form id="userForm">
-                            <div class="form-group text-center">
-                                <label>Hình ảnh</label>
-                                <div class="mb-3">
-                                    ${
-                                        res.data.images[0]
-                                            ? `<img id="img_category" style="width:120px;height:120px;object-fit:cover;" src="${res.data.images[0]}" alt="">`
-                                            : `<img style="width:120px;height:120px;object-fit:cover;" src="/img/user-default.png" alt="">`
+                            <div class="form-group d-flex justify-content-center">
+                                <div class="sub-image-slider" 
+                                    style="
+                                    display:flex;
+                                    gap:8px;
+                                    overflow-x:auto;
+                                    flex-wrap: nowrap;
+                                    ">
+                                    ${res.data.images && res.data.images.length > 1 ? res.data.images.map((img, i) => 
+                                        `
+                                            <img 
+                                            src="${img}" 
+                                            class="sub-image-item"
+                                            data-index="${i}"
+                                            style="
+                                                width:280px;
+                                                height:280px;
+                                                object-fit:cover;
+                                                border-radius:12px;
+                                                cursor:pointer;
+                                                flex-shrink:0;
+                                                border:2px solid transparent;
+                                                transition:all 0.2s ease;
+                                            "
+                                            alt="Ảnh phụ"
+                                            />
+                                        `
+                                    ).join('')
+                                    : ''
                                     }
                                 </div>
                             </div>
@@ -195,13 +211,9 @@ $(document).ready(function() {
 
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-light-primary" data-dismiss="modal">Huỷ</button>
-                        <button id="btn_save_edit" type="button" class="btn btn-primary btn-save-add">Lưu</button>
-                    </div>
                 `;
 
-                $('#modalContent').html(htmlEdit);
+                $('#modalContent_body').html(htmlEdit);
                 $('#exampleModalCenter').modal('show');
 
                 const status = res.data.status;
@@ -335,6 +347,78 @@ $(document).ready(function() {
         $('#input_search').val('');
         searchText = '';
         loadPost(currentPage, pageSize, searchText);
+    });
+
+    // --- Ảnh full màn ---
+    const overlay = document.getElementById('imageOverlay');
+    const overlayImg = document.getElementById('overlayImage');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const counter = document.getElementById('imageCounter');
+
+    // Lưu danh sách ảnh và index hiện tại
+    let currentIndex = 0;
+    let allImages = [];
+
+    // Khi click ảnh nhỏ => hiển thị ảnh lớn
+    $(document).on('click', '.sub-image-item', function () {
+        allImages = Array.from(document.querySelectorAll('.sub-image-item')).map(img => img.src);
+        currentIndex = parseInt($(this).attr('data-index'), 10);
+        showImage(currentIndex);
+    });
+
+    function showImage(index) {
+        overlayImg.style.opacity = 0;
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        setTimeout(() => {
+            overlayImg.src = allImages[index];
+            overlayImg.onload = () => (overlayImg.style.opacity = 1);
+        }, 150);
+
+        // 👉 Cập nhật chỉ số
+        counter.textContent = `${index + 1} / ${allImages.length}`;
+    }
+
+    // Nút next / prev
+    nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentIndex = (currentIndex + 1) % allImages.length;
+        showImage(currentIndex);
+    });
+
+    prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentIndex = (currentIndex - 1 + allImages.length) % allImages.length;
+        showImage(currentIndex);
+    });
+
+    // Đóng khi click ra ngoài hoặc bấm ESC
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay || e.target === overlayImg) {
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+            counter.textContent = '';
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (overlay.style.display === 'flex') {
+            if (e.key === 'Escape') {
+                overlay.style.display = 'none';
+                document.body.style.overflow = '';
+                counter.textContent = '';
+            }
+            if (e.key === 'ArrowRight') {
+                currentIndex = (currentIndex + 1) % allImages.length;
+                showImage(currentIndex);
+            }
+            if (e.key === 'ArrowLeft') {
+                currentIndex = (currentIndex - 1 + allImages.length) % allImages.length;
+                showImage(currentIndex);
+            }
+        }
     });
 
 });
