@@ -114,12 +114,36 @@ content: `
 
     <!-- Modal-->
     <div class="modal fade" id="exampleModalCenter" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content" id="modalContent">
-                
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 60%;">
+            <div class="modal-content" id="modalContent" style="max-height: 90vh;overflow-y: auto;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết bài đăng</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i aria-hidden="true" class="ki ki-close"></i>
+                    </button>
+                </div>
+                <div id="modalContent_body" class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-primary" data-dismiss="modal">Huỷ</button>
+                    <button id="btn_save_edit" type="button" class="btn btn-primary btn-save-add">Lưu</button>
+                </div>
             </div>
         </div>
     </div>
+
+    <div id="imageOverlay" class="image-overlay">
+        <span id="imageCounter" class="image-counter"></span>
+
+        <button id="prevBtn" class="nav-btn prev-btn">&lt;</button>
+
+        <img id="overlayImage" class="overlay-image" src="" alt="Overlay Image" />
+
+        <button id="nextBtn" class="nav-btn next-btn">&gt;</button>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="/js/post/post.js"></script>
+
 ` }) %>
