@@ -233,7 +233,7 @@ $(document).ready(function() {
                             </div>
                             <div class="form-group">
                                 <label>Email:</label>
-                                <input value="${res.data.email}" id="email_edit" type="email" name="email" class="form-control" placeholder="Nhập email" required>
+                                <input value="${res.data.email}" id="email_edit" type="email" name="email" class="form-control" placeholder="Nhập email" required readonly>
                             </div>
                             <div class="form-group">
                                 <label>Địa chỉ:</label>
