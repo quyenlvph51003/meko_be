@@ -4,15 +4,75 @@
 }
 
 .table-wrapper table {
-    min-width: 1200px; /* tùy chỉnh để bật scroll khi bảng quá rộng */
+    min-width: 1200px;
+    /* tùy chỉnh để bật scroll khi bảng quá rộng */
     border-collapse: collapse;
 }
 
 .nowrap-table td,
 .nowrap-table th {
-    white-space: nowrap;   /* Không xuống dòng */
+    white-space: nowrap;
+    /* Không xuống dòng */
 }
 
 .nowrap-table {
-    table-layout: auto;    /* Cho phép bảng co giãn theo nội dung */
+    table-layout: auto;
+    /* Cho phép bảng co giãn theo nội dung */
+}
+
+.image-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.image-counter {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  color: white;
+  font-size: 18px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  user-select: none;
+}
+
+.overlay-image {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  transition: transform 0.3s ease;
+  cursor: zoom-out;
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 40px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.2s ease;
+}
+
+.nav-btn:hover {
+  opacity: 0.8;
+}
+
+.prev-btn {
+  left: 20px;
+}
+
+.next-btn {
+  right: 20px;
 }
