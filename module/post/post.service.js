@@ -9,7 +9,7 @@ import {PostStatus} from '../../utils/enum.common.js';
 import ValidateUtils from '../../utils/validate_utils.js';
 import Violation from '../category_violation/category.violation.repository.js';
 import PostHistoryRepo from "../post_history/post.history.repository.js";
-
+import PostFavorite from "../../module/post_favorite/favorite.repository.js";
 class PostService{
     async createPost(post){
         const userId=post.userId;
@@ -96,7 +96,14 @@ class PostService{
                 })
             }
         }
-        return await PostRepository.getDetailByPostId(postId);
+        const result=await PostRepository.getDetailByPostId(postId);
+        const postFavorite=await PostFavorite.getFavoriteExists(postId,userId);
+        if(postFavorite){
+            result.isFavorite=true;
+        }else{
+            result.isFavorite=false;
+        }
+        return result;
     }
 
 
@@ -174,6 +181,7 @@ class PostService{
         const wardCode=post.wardCode;
         const provinceCode=post.provinceCode;
         const userId=post.userId;
+        const userPosterId=post.userPosterId;
         const status=post.status;
         const categoryIds=post.categoryIds;   
         
@@ -214,7 +222,15 @@ class PostService{
                 throw new Error('Category ID is not an array');
             }
         }
-        return await PostRepository.searchPostRepo(searchText,wardCode,provinceCode,userId,status,categoryIds,page,limit);
+        
+        const result= await PostRepository.searchPostRepo(searchText,wardCode,provinceCode,userPosterId,status,categoryIds,page,limit);
+        await Promise.all(
+  result.content.map(async (item) => {
+    const postFavorite = await PostFavorite.getFavoriteExists(item.id, userId);
+    item.isFavorite = !!postFavorite;
+  })
+);
+        return result;
     }
 
 

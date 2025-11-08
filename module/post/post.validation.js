@@ -107,7 +107,7 @@ const validationUpdatePost=(req,res,next)=>{
 }
 
 const validateSearchPost=(req,res,next)=>{
-    const allowedFields=['searchText','wardCode','provinceCode','userId','status','categoryIds'];
+    const allowedFields=['searchText','wardCode','provinceCode','userPosterId','status','categoryIds','userId'];
     const invalidFields = Object.keys(req.body).filter(field => !allowedFields.includes(field));
     if (invalidFields.length > 0) {
         return ResponseUtils.validationErrorResponse(res, `Các trường ${invalidFields.join(', ')} không hợp lệ`);

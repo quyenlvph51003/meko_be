@@ -5,6 +5,7 @@ const stringCommonUtils={
         return `select
                     p.id as id,
                     p.user_id as userId,
+                    u.email as emailPoster,
                     u.username as userNamePoster,
                     u.avatar as avatarPoster,  
                     p.title,

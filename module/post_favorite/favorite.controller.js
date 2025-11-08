@@ -55,8 +55,30 @@ const searchFavoriteController=async(req,res)=>{
         return ResponseUtil.errorResponse(res, error);
     }
 }
+const deleteByPostIdUserIdController=async(req,res)=>{
+    try{
+        const postId=req.query.postId;
+        const userId=req.query.userId;
+        if(!postId || !userId){
+            return ResponseUtil.errorResponse(res, 'Thiếu tham số userId hoặc postId');
+        }
+        const result = await FavoriteService.deleteByPostIdUserId(postId,userId);
+        if(result){
+            return ResponseUtil.successResponse(res, null,'Xoá bài viết yêu thích thành công');
+        }
+        return ResponseUtil.errorResponse(res, 'Lỗi hệ thống, vui lòng liên hệ quản trị viên');
+    }catch(error){
+        if(error.message === 'Favorite not found'){
+            return ResponseUtil.notFoundResponse(res,'Bài viết yêu thích không tồn tại');
+        }
+        console.log(error);
+        
+        return ResponseUtil.errorResponse(res, error);
+    }
+}
 export default {
     createFavoriteController,
     deleteFavoriteController,
-    searchFavoriteController
+    searchFavoriteController,
+    deleteByPostIdUserIdController
 }

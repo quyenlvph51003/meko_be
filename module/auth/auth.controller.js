@@ -33,6 +33,13 @@ const authController={
                 'tokenExpired': user.token_expired,
                 'refreshTokenExpired': user.refresh_expired,
                 'role':user.role,
+                'avatar':user.avatar,
+                'username':user.username,
+                'email':user.email,
+                'address_name':user.address_name,
+                'is_active':user.is_active,
+                'created_at':user.created_at,
+                'updated_at':user.updated_at,
                 // 'user': user
             },'Đăng nhập thành công');
         } catch (error) {

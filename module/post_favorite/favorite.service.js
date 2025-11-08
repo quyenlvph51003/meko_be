@@ -46,6 +46,14 @@ class FavoriteService {
         const result = await this.favoriteRepository.searchFavorite(userId,searchText,page,size);
         return result;
     }
+    async deleteByPostIdUserId(postId,userId){
+        const favorite = await this.favoriteRepository.getFavoriteExists(postId,userId);
+        if(!favorite){
+            throw new Error('Favorite not found');
+        }
+        await this.favoriteRepository.deleteWhere({post_id:postId,user_id:userId});
+        return true;
+    }
 }
 
 export default new FavoriteService();
