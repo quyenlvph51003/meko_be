@@ -11,12 +11,19 @@ function loadCategories(page = 0, size = pageSize, searchText = '') {
             'Authorization': sessionStorage.getItem('token')
         },
         data: JSON.stringify({
-            searchText: searchText
+            searchText: searchText,
         }),
         success: function(res) {
             const tbody = $('#kt_datatable1_body');
             tbody.empty();
             res.data.content.forEach(category => {
+                const lockBtn = category.is_active == 1
+                    ? `<button class="btn btn-danger btn-sm btn-lock" data-id="${category.id}" data-status="1">
+                            <i class="fa fa-lock p-0"></i>
+                    </button>`
+                    : `<button class="btn btn-success btn-sm btn-lock" data-id="${category.id}" data-status="0">
+                            <i class="fa fa-unlock p-0"></i>
+                    </button>`;
                 tbody.append(`
                     <tr style="line-height: 100px;">
                         <td>${category.id}</td>
@@ -38,6 +45,7 @@ function loadCategories(page = 0, size = pageSize, searchText = '') {
                                     </g>
                                 </svg>
                             </span>
+                            <span>${lockBtn}</span>
                         </td>
                     </tr>
                 `);
@@ -308,6 +316,50 @@ $(document).ready(function() {
         $('#input_search').val('');
         searchText = '';
         loadCategories(currentPage, pageSize, searchText);
+    });
+
+    $(document).on('click', '.btn-lock', function() {
+        const categoryId = $(this).data('id');
+        const status = $(this).data('status');
+        const titleText = status == 1 ? 'Xác nhận khóa danh mục?' : 'Xác nhận mở khóa danh mục?';
+        Swal.fire({
+            title: titleText,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy bỏ',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/api/category/update-is-active/' + categoryId,
+                    type: 'PUT',
+                    headers: {
+                        'Authorization': sessionStorage.getItem('token')
+                    },
+                    success: function(res) {
+                        const message =res.data.is_active == 1
+                            ? 'Mở khóa danh mục thành công!'
+                            : 'Khóa danh mục thành công!';
+                        Swal.fire({
+                            icon: 'success',
+                            title: message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        loadCategories(currentPage, pageSize, searchText);
+                    },
+                    error: function(err) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Không thể cập nhật danh mục.',
+                        });
+                        console.error('Không thể cập nhật danh mục:', err);
+                    }
+                });
+            }
+        });
     });
 
 });
