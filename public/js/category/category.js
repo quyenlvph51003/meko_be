@@ -3,6 +3,15 @@ let pageSize = parseInt($('#page-size-selector').val());
 let searchText = '';
 
 function loadCategories(page = 0, size = pageSize, searchText = '') {
+    Swal.fire({
+        title: 'Đang xử lý...',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        onOpen: () => {
+            swal.showLoading();
+        }
+    });
     $.ajax({
         url: `/api/category/search?page=${page}&size=${size}`,
         method: 'POST',
@@ -14,6 +23,7 @@ function loadCategories(page = 0, size = pageSize, searchText = '') {
             searchText: searchText,
         }),
         success: function(res) {
+            Swal.close();
             const tbody = $('#kt_datatable1_body');
             tbody.empty();
             res.data.content.forEach(category => {
