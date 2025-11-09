@@ -12,6 +12,15 @@ function formatDate(isoString) {
 }
 
 function loadUsers(page = 0, size = pageSize, searchText = '') {
+    Swal.fire({
+        title: 'Đang xử lý...',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        onOpen: () => {
+            swal.showLoading();
+        }
+    });
     $.ajax({
         url: '/api/user/search',
         method: 'GET',
@@ -25,6 +34,7 @@ function loadUsers(page = 0, size = pageSize, searchText = '') {
             searchText: searchText
         },
         success: function(res) {
+            Swal.close();
             const tbody = $('#kt_datatable1_body');
             tbody.empty();
             res.data.content.forEach(user => {
