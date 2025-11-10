@@ -15,13 +15,18 @@ const searchHistoryController=async(req,res)=>{
         if(!userExists){
             return ResponseUtils.notFoundResponse(res,'Người dùng không tồn tại');
         }
-        const response=await PostHistoryRepo.searchHistoryRepo(userId,page,size,searchText);
-        const result = response.content.map(item => ({
-  ...item,
-  images: item.images ? item.images.split(',') : [],
-  categories: item.categories ? item.categories.split(',') : [],
-}));
-    return ResponseUtils.successResponse(res,result);
+        const result = await PostHistoryRepo.searchHistoryRepo(userId, page, size, searchText);
+
+        if (Array.isArray(result.content)) {
+        result.content = result.content.map(item => ({
+            ...item,
+            images: typeof item.images === 'string' ? item.images.split(',') : [],
+            categories: typeof item.categories === 'string' ? item.categories.split(',') : [],
+        }));
+        }
+
+        return ResponseUtils.successResponse(res, result);
+
     } catch (error) {
         return ResponseUtils.errorResponse(res,error.message);
     }
