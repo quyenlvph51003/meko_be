@@ -12,6 +12,15 @@ function formatDate(isoString) {
 }
 
 function loadPost(page=0, size=pageSize,searchText = '') {
+    Swal.fire({
+        title: 'Đang xử lý...',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        onOpen: () => {
+            swal.showLoading();
+        }
+    });
     $.ajax({
         url: `/api/post/search-post?page=${page}&size=${size}`,
         method: 'POST',
@@ -23,6 +32,7 @@ function loadPost(page=0, size=pageSize,searchText = '') {
             searchText: searchText
         }),
         success: function(res) {
+            Swal.close();
             const tbody = $('#kt_datatable1_body');
             tbody.empty();
             res.data.content.forEach(post => {
