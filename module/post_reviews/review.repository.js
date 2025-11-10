@@ -23,6 +23,7 @@ class ReviewRepository extends BaseService {
             pr.comment AS review_comment,
             pr.created_at AS review_created_at,
             u.username AS review_user,
+            u.id AS review_user_id,
             u.avatar AS review_user_avatar,
             COALESCE(
                 JSON_ARRAYAGG(
@@ -33,6 +34,7 @@ class ReviewRepository extends BaseService {
                                 'reply_comment', r.comment,
                                 'reply_created_at', r.created_at,
                                 'reply_user', u2.username,
+                                'reply_user_id',u2.id,
                                 'reply_user_avatar', u2.avatar
                             )
                     END
