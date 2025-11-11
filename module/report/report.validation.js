@@ -10,9 +10,9 @@ const validationCreateReport=(req,res,next)=>{
     if(!reporterUserId){
         return ResponseUtils.validationErrorResponse(res,'ID người báo cáo không được để trống');
     }
-    if(!reason){
-        return ResponseUtils.validationErrorResponse(res,'Lí do báo cáo không được để trống');
-    }
+    // if(!reason){
+    //     return ResponseUtils.validationErrorResponse(res,'Lí do báo cáo không được để trống');
+    // }
     if(!violationId){
         return ResponseUtils.validationErrorResponse(res,'ID vi phạm không được để trống');
     }
