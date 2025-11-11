@@ -33,31 +33,57 @@ const createPostController=async(req,res,next)=>{
     }
 }
 
-const updatePostByIdController=async(req,res,next)=>{
-    try{
-        const postData=req.body.parsedData;
-        if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-            const imageUrls = req.files.map(file => file.path);
-            postData.images = imageUrls;
+const updatePostByIdController = async (req, res, next) => {
+    try {
+        const postData = req.body.parsedData;
+        const hasOldImagesField = Object.prototype.hasOwnProperty.call(postData, 'oldImages');
+        const oldImages = hasOldImagesField && Array.isArray(postData.oldImages) ? postData.oldImages : [];
+        const newImages = (req.files && Array.isArray(req.files) && req.files.length > 0)
+            ? req.files.map(file => file.path)
+            : [];
+
+        if (hasOldImagesField || newImages.length > 0) {
+            // Dùng cơ chế mới: chỉ set keepOldImages khi client thực sự gửi oldImages
+            if (hasOldImagesField) {
+                postData.keepOldImages = oldImages;
+            } else {
+                delete postData.keepOldImages;
+            }
+            postData.newImages = newImages;
+            // Tránh dùng đường cũ khi đã có cơ chế mới
+            delete postData.images;
+        } else {
+            // Không gửi gì về ảnh: để service giữ nguyên DB
+            // Vẫn giữ tương thích với dạng cũ nếu client đã gửi images (mảng đầy đủ)
+            if (!Array.isArray(postData.images)) {
+                delete postData.images;
+            }
+            delete postData.keepOldImages;
+            delete postData.newImages;
         }
-        const post=await PostService.updatePost(postData);
-        
-        post.images=post.images?post.images.split(','):[];
-        post.categories=post.categories?post.categories.split(','):[];
-        
-        return ResponseUtils.successResponse(res,post,'Cập nhật bài viết thành công');
-    }catch(error){
-        if(error.message==='Post not found'){
-            return ResponseUtils.notFoundResponse(res,'Không tìm thấy bài viết');
+        delete postData.oldImages;
+
+        const post = await PostService.updatePost(postData);
+
+        post.images = post.images ? post.images.split(',') : [];
+        post.categories = post.categories ? post.categories.split(',') : [];
+
+        return ResponseUtils.successResponse(res, post, 'Cập nhật bài viết thành công');
+    } catch (error) {
+        if (error.message === 'Post not found') {
+            return ResponseUtils.notFoundResponse(res, 'Không tìm thấy bài viết');
         }
-        if(error.message==='Province not found'){
-            return ResponseUtils.notFoundResponse(res,'Không tìm thấy tỉnh/thành phố');
+        if (error.message === 'Province not found') {
+            return ResponseUtils.notFoundResponse(res, 'Không tìm thấy tỉnh/thành phố');
         }
-        if(error.message==='Ward not found'){
-            return ResponseUtils.notFoundResponse(res,'Không tìm thấy xã/phường');
+        if (error.message === 'Ward not found') {
+            return ResponseUtils.notFoundResponse(res, 'Không tìm thấy xã/phường');
         }
-        if(error.message==='Category not found'){
-            return ResponseUtils.notFoundResponse(res,'Không tìm thấy danh mục sản phẩm');
+        if (error.message === 'Category not found') {
+            return ResponseUtils.notFoundResponse(res, 'Không tìm thấy danh mục sản phẩm');
+        }
+        if (error.message === 'Old image not belong to post') {
+            return ResponseUtils.validationErrorResponse(res, 'Ảnh cũ không thuộc bài viết hiện tại');
         }
         console.log(error);
         return ResponseUtils.serverErrorResponse(res);

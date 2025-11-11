@@ -114,7 +114,9 @@ class PostService{
         const address=post.address;
         const price=post.price;
         const phoneNumber=post.phoneNumber;
-        const images=post.images;
+        const images=post.images; // backward-compat
+        const keepOldImages = post.keepOldImages; // optional array of URLs to keep
+        const newImages = post.newImages; // optional array of newly uploaded URLs
         const categories=post.categories;
         const wardCode=post.wardCode;
         const provinceCode=post.provinceCode;
@@ -142,8 +144,44 @@ class PostService{
             phone_number:phoneNumber
         }
 
-        // nếu truyền lên request thì xoá và lưu bản ghi mới
-        if(images != undefined){
+        // Ảnh: hỗ trợ 2 kiểu dữ liệu
+        // 1) Kiểu mới: keepOldImages + newImages
+        // 2) Kiểu cũ: images (mảng đầy đủ)
+        if (keepOldImages !== undefined || newImages !== undefined) {
+            const currentImages = await ImagePostRepository.getListImageByPostId(postId);
+            const currentUrls = currentImages.map(img => img.image_url);
+            const currentUrlSet = new Set(currentUrls);
+
+            let keepList;
+            if (keepOldImages === undefined) {
+                // Mặc định: nếu không gửi keepOldImages, giữ toàn bộ ảnh hiện tại (append)
+                keepList = currentUrls;
+            } else {
+                keepList = Array.isArray(keepOldImages) ? keepOldImages : [];
+                // Xác thực toàn bộ keepOldImages đều thuộc post hiện tại
+                for (const url of keepList) {
+                    if (!currentUrlSet.has(url)) {
+                        throw new Error('Old image not belong to post');
+                    }
+                }
+            }
+
+            const finalImageList = [
+                ...keepList,
+                ...(Array.isArray(newImages) ? newImages : [])
+            ];
+
+            // Xóa toàn bộ và tạo lại theo danh sách mới
+            await ImagePostRepository.deleteImagePost(postId);
+            if (finalImageList.length > 0) {
+                const imageValues = finalImageList.map((imageUrl) => ({
+                    post_id: postId,
+                    image_url: imageUrl
+                }));
+                await ImagePostRepository.createManyImagePost(imageValues);
+            }
+        } else if (images !== undefined) {
+            // Kiểu cũ: nếu truyền 'images' thì coi đó là danh sách cuối cùng
             const imageValues = images.map((imageUrl) => ({
                 post_id: postId,
                 image_url: imageUrl
