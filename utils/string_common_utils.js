@@ -13,6 +13,8 @@ const stringCommonUtils={
                     p.price,
                     p.address,
                     p.status,
+                    p.reason_reject as reasonReject,
+                    p.reason_violation as reasonViolation,
                     p.phone_number as phoneNumber,
                     p.expired_at as expiredAt,
                     p.is_pinned as isPinned,
