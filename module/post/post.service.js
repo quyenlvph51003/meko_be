@@ -312,6 +312,15 @@ class PostService{
         }
         return await PostRepository.updateStatusPostRepo(postId,post);
     }
-
+    async updateIsPinnedPostService(postId){
+        const postExists=await PostRepository.findById(postId);
+        if(!postExists){
+            throw new Error('Post not found');
+        }
+        const post={
+            is_pinned:!postExists.is_pinned
+        }
+        return await PostRepository.updateWhere({id:postId},post);
+    }
 }
 export default new PostService();

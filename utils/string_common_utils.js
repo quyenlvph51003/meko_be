@@ -20,6 +20,8 @@ const stringCommonUtils={
                     p.updated_at as updatedAt,
                     p.ward_code as wardCode,
                     p.province_code as provinceCode,
+                    w.name as wardName,
+                    pr.name as provinceName,
                     GROUP_CONCAT(DISTINCT ip.image_url) AS images,
                     GROUP_CONCAT(DISTINCT c.name) AS categories
                 from post p
@@ -30,7 +32,11 @@ const stringCommonUtils={
                 left join 
                     categories c on pc.category_id=c.id
                 left join 
-                    users u on p.user_id=u.id                    
+                    users u on p.user_id=u.id  
+                left join 
+                    wards w on p.ward_code=w.code           
+                left join 
+                    provinces pr on p.province_code=pr.code       
                 ${whereClause}
                 GROUP BY 
                     p.id, p.user_id, p.title, p.description, p.price, p.address, 

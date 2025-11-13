@@ -9,5 +9,6 @@ router.post('/create',Middleware.authenticate,upload.array('images'),PostValidat
 router.get('/detail/:postId',PostController.getDetailByPostIdController);
 router.put('/update',Middleware.authenticate,upload.array('images'),PostValidation.validationUpdatePost,PostController.updatePostByIdController);
 router.post('/search-post',PostValidation.validateSearchPost,PostValidation.validateSearchPost,PostController.searchPostController)
-router.put('/update-status/:postId',Middleware.authenticate,PostValidation.validateUpdateStatusPost,PostController.updateStatusPostController)
+router.put('/update-status/:postId',Middleware.authenticate,PostValidation.validateUpdateStatusPost,PostController.updateStatusPostController);
+router.put('/update-is-pinned/:postId',Middleware.authenticate,PostController.updateIsPinnedPostController);
 export default router;

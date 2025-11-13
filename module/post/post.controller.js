@@ -205,6 +205,27 @@ const updateStatusPostController=async(req,res,next)=>{
     // ⚠️ Lỗi không xác định
     return ResponseUtils.serverErrorResponse(res, 'Lỗi hệ thống, vui lòng thử lại sau.');
     }
+   
 }
+ const updateIsPinnedPostController=async(req,res,next)=>{
+        try{
+            const role=req.user.role;
+            console.log(role);
+            
+            if(role!=1){
+                return ResponseUtils.validationErrorResponse(res,'Chỉ admin mới có quyền thay đổi trạng thái này');
+            }
+            const postId=req.params.postId;
+            await PostService.updateIsPinnedPostService(postId); 
+            const result=await PostService.getDetailByPostId(postId,null);
+            return ResponseUtils.successResponse(res,result,'Cập nhật ghim bài viết thành công');
+        }catch(error){
+            if(error.message==='Post not found'){
+                return ResponseUtils.notFoundResponse(res,'Không tìm thấy bài viết');
+            }
+            console.log(error);
+            return ResponseUtils.serverErrorResponse(res);
+        }
+    }
 
-export default {createPostController,getDetailByPostIdController,updatePostByIdController,searchPostController,updateStatusPostController}
+export default {createPostController,getDetailByPostIdController,updatePostByIdController,searchPostController,updateStatusPostController,updateIsPinnedPostController}
