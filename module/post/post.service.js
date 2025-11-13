@@ -135,13 +135,14 @@ class PostService{
             throw new Error('Ward not found');
         }
         const postUpdate={
-            title:title,
-            description:description,
-            address:address,
-            price:price,
-            ward_code:wardCode,
-            province_code:provinceCode,
-            phone_number:phoneNumber
+            title:title ?? postExists.title,
+            description:description ?? postExists.description,
+            address:address ?? postExists.address,
+            price:price ?? postExists.price,
+            ward_code:wardCode ?? postExists.ward_code,
+            province_code:provinceCode ?? postExists.province_code,
+            phone_number:phoneNumber ?? postExists.phone_number,
+            // categories:categories ?? postExists.categories
         }
 
         // Ảnh: hỗ trợ 2 kiểu dữ liệu
@@ -190,7 +191,7 @@ class PostService{
             await ImagePostRepository.createManyImagePost(imageValues);
         }
 
-        if(categories){
+        if(categories !=null && categories.length > 0){
             for(const id of categories){
                 const categoryExist=await Category.getCategoryRepoById(id);
                 if(!categoryExist){

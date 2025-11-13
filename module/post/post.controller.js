@@ -36,6 +36,8 @@ const createPostController=async(req,res,next)=>{
 const updatePostByIdController = async (req, res, next) => {
     try {
         const postData = req.body.parsedData;
+        console.log(postData);
+        
         const hasOldImagesField = Object.prototype.hasOwnProperty.call(postData, 'oldImages');
         const oldImages = hasOldImagesField && Array.isArray(postData.oldImages) ? postData.oldImages : [];
         const newImages = (req.files && Array.isArray(req.files) && req.files.length > 0)

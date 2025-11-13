@@ -71,35 +71,35 @@ const validationUpdatePost=(req,res,next)=>{
         return ResponseUtils.validationErrorResponse(res,'Dữ liệu không đúng định dạng JSON');
     }
     
-    const {title, description, categories, wardCode, provinceCode, address, price, phoneNumber} = data;
+    // const {title, description, categories, wardCode, provinceCode, address, price, phoneNumber} = data;
     
-    if(!title){
-        return ResponseUtils.validationErrorResponse(res,'Tiêu đề không được để trống');
-    }
-    if(!description){
-        return ResponseUtils.validationErrorResponse(res,'Mô tả không được để trống');
-    }
+    // if(!title){
+    //     return ResponseUtils.validationErrorResponse(res,'Tiêu đề không được để trống');
+    // }
+    // if(!description){
+    //     return ResponseUtils.validationErrorResponse(res,'Mô tả không được để trống');
+    // }
     
-    if(!wardCode){
-        return ResponseUtils.validationErrorResponse(res,'ID xã, phường không được để trống');
-    }
-    if(!provinceCode){
-        return ResponseUtils.validationErrorResponse(res,'ID tỉnh, thành phố không được để trống');
-    }
-    if(!address){
-        return ResponseUtils.validationErrorResponse(res,'Địa chỉ không được để trống');
-    }
-    if(!price || isNaN(Number(price))){
-        return ResponseUtils.validationErrorResponse(res,'Giá không hợp lệ');
-    }
+    // if(!wardCode){
+    //     return ResponseUtils.validationErrorResponse(res,'ID xã, phường không được để trống');
+    // }
+    // if(!provinceCode){
+    //     return ResponseUtils.validationErrorResponse(res,'ID tỉnh, thành phố không được để trống');
+    // }
+    // if(!address){
+    //     return ResponseUtils.validationErrorResponse(res,'Địa chỉ không được để trống');
+    // }
+    // if(!price || isNaN(Number(price))){
+    //     return ResponseUtils.validationErrorResponse(res,'Giá không hợp lệ');
+    // }
     
-    if (!Array.isArray(categories) || categories.length === 0) {
-        return ResponseUtils.validationErrorResponse(res, 'Danh sách danh mục không hợp lệ hoặc trống');
-    }
+    // if (!Array.isArray(categories) || categories.length === 0) {
+    //     return ResponseUtils.validationErrorResponse(res, 'Danh sách danh mục không hợp lệ hoặc trống');
+    // }
     
-    if(!phoneNumber || !ValidateUtils.isValidVietnamPhone(phoneNumber)){
-        return ResponseUtils.validationErrorResponse(res,'Số điện thoại không hợp lệ');
-    }
+    // if(!phoneNumber || !ValidateUtils.isValidVietnamPhone(phoneNumber)){
+    //     return ResponseUtils.validationErrorResponse(res,'Số điện thoại không hợp lệ');
+    // }
     // Gán data đã parse vào req để controller sử dụng
     req.body.parsedData = data;
     
