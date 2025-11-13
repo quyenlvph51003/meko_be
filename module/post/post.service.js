@@ -125,14 +125,17 @@ class PostService{
         if(!postExists){
             throw new Error('Post not found');
         }
-        const provinceExist=await ProvinceRepository.getProvinceByCode(provinceCode);
-        if(!provinceExist){
-            throw new Error('Province not found');
+        if(provinceCode){
+            const provinceExist=await ProvinceRepository.getProvinceByCode(provinceCode);
+            if(!provinceExist){
+                throw new Error('Province not found');
+            }
         }
-        
-        const wardExist=await WardRepository.getWardByCode(wardCode);
-        if(!wardExist){
-            throw new Error('Ward not found');
+        if(wardCode){
+            const wardExist=await WardRepository.getWardByCode(wardCode);
+            if(!wardExist){
+                throw new Error('Ward not found');
+            }
         }
         const postUpdate={
             title:title ?? postExists.title,
@@ -235,7 +238,6 @@ class PostService{
             throw new Error('Status not found');
         }
         }
-
         if(provinceCode){
             const province=await ProvinceRepository.getProvinceByCode(provinceCode);
             if(!province){
