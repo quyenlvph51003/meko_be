@@ -123,7 +123,8 @@ const userController={
             if(!updateUser){
                 return ResponseUtils.serverErrorResponse(res);
             }
-            return ResponseUtils.successResponse(res,null,'Tạo mã pin thành công');
+            const result=await userService.findByIdUser(userId);
+            return ResponseUtils.successResponse(res,result,'Tạo mã pin thành công');
         } catch (error) {
             console.log(error);
             return ResponseUtils.serverErrorResponse(res);
@@ -137,7 +138,8 @@ const userController={
             if(!updateUser){
                 return ResponseUtils.serverErrorResponse(res);
             }
-            return ResponseUtils.successResponse(res,null,'Cập nhật mã pin thành công');
+            const result=await userService.findByIdUser(id);
+            return ResponseUtils.successResponse(res,result,'Cập nhật mã pin thành công');
         } catch (error) {
             if(error.message==='Pin wallet old not valid'){
                 return ResponseUtils.validationErrorResponse(res,'Mã pin cũ không chính xác');
