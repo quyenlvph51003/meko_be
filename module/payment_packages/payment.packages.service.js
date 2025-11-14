@@ -31,7 +31,11 @@ class PaymentPackagesService {
         return await PaymentPackagesRepository.findById(id);
     }
     async getAllPaymentPackage(isActive) {
-        return await PaymentPackagesRepository.getAll({is_active:isActive});
+        const conditions={}
+        if(isActive){
+            conditions.is_active=isActive;
+        }
+        return await PaymentPackagesRepository.getAll(conditions);
     }
 }
 
