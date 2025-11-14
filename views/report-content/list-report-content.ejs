@@ -1,0 +1,119 @@
+<%- include('../master', { title: 'Danh sách danh mục', 
+content: `
+    <div class="d-flex flex-column-fluid">
+        <!--begin::Container-->
+        <div class="container" style="max-width: 2400px;">
+            <!--begin::Card-->
+            <div class="card card-custom gutter-b">
+                <div class="card-header flex-wrap border-0 pt-6 pb-0">
+                    <div class="card-title">
+                        <h3 class="card-label">Danh sách bài viết bị tố cáo</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form class="mb-10">
+                        <div class="row">
+                            <div class="form-group col-12 col-sm-6 col-lg-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="la la-search"></i>
+                                        </span>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        id="input_search" 
+                                        name="input_search" 
+                                        class="form-control search-input" 
+                                        placeholder="Tìm kiếm..."
+                                    >
+                                </div>
+                            </div>
+                            <div class="col-lg-9 col-sm-6 col-12">
+                                <button class="btn btn-primary btn-primary--icon" id="kt_search_4">
+                                    <span>
+                                        <i class="la la-search"></i>
+                                        <span>Tìm kiếm</span>
+                                    </span>
+                                </button>&#160;&#160;
+                                <button class="btn btn-secondary btn-secondary--icon" id="kt_reset_4">
+                                    <span>
+                                        <i class="la la-close"></i>
+                                        <span>Reset</span>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <!--begin: Datatable-->
+                    <table class="table table-hover table-separate table-head-custom table-checkable" id="kt_datatable1">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Hình ảnh</th>
+                                <th>Danh mục</th>
+                                <th>Tiêu đề</th>
+                                <th>Tác giả</th>
+                                <th>Lý do tố cáo</th>
+                                <th>Tổng số lần tố cáo</th>
+                                <th>Trạng thái</th>
+                                <th style="width: 100px;padding-left:0;text-align: center;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kt_datatable1_body">
+                            
+                        </tbody>
+                    </table>
+                    <!--end: Datatable-->
+                    <!-- Phân trang -->
+                    <div class="row mt-4">
+                        <div class="col-12 col-md-4 mb-2 mb-md-0">
+                            <div class="d-flex align-items-center">
+                                <span class="mr-2">Hiển thị:</span>
+                                <select id="page-size-selector" class="form-control form-control-sm"
+                                    style="width: auto;">
+                                    <option value="10">10</option>
+                                    <option value="20" selected>20</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                                <span class="ml-2">bản ghi</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 mb-2 mb-md-0 text-center">
+                            <div class="pagination-info">
+                                <span id="pagination-text">Hiển thị 1-20 của 0 bản ghi</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 text-right">
+                            <div class="pagination-controls">
+                                <button id="prev-page" class="btn btn-sm btn-outline-secondary" disabled>
+                                    <i class="la la-angle-left"></i> Trước
+                                </button>
+                                <span class="mx-2">
+                                    <span id="current-page">1</span> / <span id="total-pages">1</span>
+                                </span>
+                                <button id="next-page" class="btn btn-sm btn-outline-secondary" disabled>
+                                    Sau <i class="la la-angle-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Card-->
+        </div>
+        <!--end::Container-->
+    </div>
+
+    <!-- Modal-->
+    <div class="modal fade" id="exampleModalCenter" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" id="modalContent">
+                
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="/js/report-content/report-content.js"></script>
+` }) %>

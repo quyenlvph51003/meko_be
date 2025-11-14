@@ -45,9 +45,9 @@ const getController = async (req, res) => {
 const getAllController = async (req, res) => {
     try {
         const { isActive } = req.query;
-        if(!isActive){
-            return ResponseUtils.validationErrorResponse(res,'Thiếu tham số isActive');
-        }
+        // if(!isActive){
+        //     return ResponseUtils.validationErrorResponse(res,'Thiếu tham số isActive');
+        // }
         const paymentPackages = await PaymentPackagesService.getAllPaymentPackage(isActive);
         return ResponseUtils.successResponse(res, paymentPackages,'Lấy gói thanh toán thành công');
     } catch (error) {

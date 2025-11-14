@@ -34,9 +34,19 @@ router.get('/list/violating-content', (req, res) => {
     res.render('content/list-violating-content', { title: 'Quản lý nội dung' });
 });
 
+//report-port
+router.get('/list/report-content', (req, res) => {
+    res.render('report-content/list-report-content', { title: 'Quản lý nội dung tố cáo' });
+});
+
 //report
 router.get('/report-revenue', (req, res) => {
     res.render('report/revenue-report', { title: 'Báo cáo' });
+});
+
+//payment-package
+router.get('/list/payment-package', (req, res) => {
+    res.render('payment-package/list-payment-package', { title: 'Quản lý gói đăng bài' });
 });
 
 router.get('/report-overview', (req, res) => {
