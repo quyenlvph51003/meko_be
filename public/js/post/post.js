@@ -184,7 +184,7 @@ $(document).ready(function() {
                                     overflow-x:auto;
                                     flex-wrap: nowrap;
                                     ">
-                                    ${res.data.images && res.data.images.length > 1 ? res.data.images.map((img, i) => 
+                                    ${res.data.images && res.data.images.length >= 1 ? res.data.images.map((img, i) => 
                                         `
                                             <img 
                                             src="${img}" 
