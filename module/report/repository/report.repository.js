@@ -46,10 +46,13 @@ class ReportRepository extends BaseService{
                         'user_id_reporter', r2.reporter_user_id,
                         'username', u2.username,
                         'reason', r2.reason,
-                        'created_at', r2.created_at
+                        'created_at', r2.created_at,
+                        'violation_id', r2.violationId,
+                        'violation_name', cv.name
                     ))
                 FROM report r2
                 LEFT JOIN users u2 ON u2.id = r2.reporter_user_id
+                LEFT JOIN category_violation cv ON cv.id = r2.violationId
                 WHERE r2.report_summary_id = rs.id
             ) AS reports,
             -- categories: lấy DISTINCT trước rồi gom thành mảng JSON
