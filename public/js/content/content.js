@@ -38,6 +38,11 @@ function loadContent() {
                                     </g>
                                 </svg>
                             </span>
+                            <span>
+                                <button class="btn btn-danger btn-sm btn-lock" data-name="${category.name}" data-id="${category.id}" data-status="0">
+                                    <i class="fa fa-lock p-0"></i>
+                                </button>
+                            </span>
                         </td>
                     </tr>
                 `);
@@ -199,5 +204,54 @@ $(document).ready(function() {
         addCategory();
     });
 
+    $(document).on('click', '.btn-lock', function() {
+        const categoryId = $(this).data('id');
+        const status = $(this).data('status');
+        const name = $(this).data('name');
+        Swal.fire({
+            title: 'Xác nhận khoá danh mục',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy bỏ',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/api/violation/update/' + categoryId,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        isActive: status,
+                        name: name,
+                    }),
+                    headers: {
+                        'Authorization': sessionStorage.getItem('token')
+                    },
+                    success: function(res) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: res.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            $('#exampleModalCenter').modal('hide');
+                            loadContent();
+                        });
+                    },
+                    error: function(err) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thất bại!',
+                            text: err.responseJSON?.message || 'Không thể chỉnh sửa thông tin danh mục. Vui lòng thử lại!',
+                            confirmButtonText: 'Đóng'
+                        });
+                        console.error('Không thể chỉnh sửa thông tin danh mục:', err);
+                    }
+                });
+            }
+        });
+    });
 
 });

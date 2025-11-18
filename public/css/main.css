@@ -1,23 +1,23 @@
 .table-wrapper {
-    width: 100%;
-    overflow-x: auto;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .table-wrapper table {
-    min-width: 1200px;
-    /* tùy chỉnh để bật scroll khi bảng quá rộng */
-    border-collapse: collapse;
+  min-width: 1200px;
+  /* tùy chỉnh để bật scroll khi bảng quá rộng */
+  border-collapse: collapse;
 }
 
 .nowrap-table td,
 .nowrap-table th {
-    white-space: nowrap;
-    /* Không xuống dòng */
+  white-space: nowrap;
+  /* Không xuống dòng */
 }
 
 .nowrap-table {
-    table-layout: auto;
-    /* Cho phép bảng co giãn theo nội dung */
+  table-layout: auto;
+  /* Cho phép bảng co giãn theo nội dung */
 }
 
 .image-overlay {
@@ -75,4 +75,17 @@
 
 .next-btn {
   right: 20px;
+}
+
+.nav-link {
+  background: none !important;
+  border: none;
+  color: black !important;
+  border-radius: 0 !important;
+  font-weight: 600;
+}
+
+.nav-link.active {
+  color: #3699ff !important;
+  border-bottom: 3px solid #3699ff;
 }

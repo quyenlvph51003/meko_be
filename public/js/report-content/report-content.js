@@ -29,7 +29,7 @@ function loadContentReport(page = 0, size = pageSize, searchText = '') {
             tbody.empty();
             res.data.content.forEach(report => {
                 tbody.append(`
-                    <tr style="line-height: 100px;">
+                    <tr>
                         <td><img style="border-radius: 16px;width:80px;height:80px;object-fit:cover;" src="${report.images[0]}" alt=""></td>
                         <td>
                             <div class="d-flex flex-column">
@@ -52,7 +52,7 @@ function loadContentReport(page = 0, size = pageSize, searchText = '') {
                                 .map((report) => {
                                     return report.reason;
                                 })
-                                .join(' ')
+                                .join('<br>')
                             }
                         </td>
                         <td>${report.total_reports}</td>
@@ -185,6 +185,16 @@ $(document).ready(function() {
         const postId = $(this).data('id');
         const reports = JSON.parse($(this).attr('data-report'));
 
+        const uniqueReports = [];
+        const seen = new Set();
+
+        for (const r of reports) {
+            const key = `${r.violation_id}-${r.violation_name}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                uniqueReports.push(r);
+            }
+        }
         // Tạo options từ reportData.reports (mỗi report có violation_id)
         const optionsHtml = (reports || []).map(r => `
             <option value="${r.violation_id}">${r.violation_name}</option>
@@ -211,7 +221,7 @@ $(document).ready(function() {
         $('#modalContent_body').html(htmlEdit);
         $('#exampleModalCenter').modal('show');
 
-        $(document).off('click', '#btn_approved_report').on('click', '#btn_approved_report', async  function() {
+        $(document).off('click', '#btn_save_approved_report').on('click', '#btn_save_approved_report', async  function() {
             $.ajax({
                 url: `/api/report/update-status?postId=${postId}`,
                 type: 'PUT',
