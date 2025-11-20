@@ -11,4 +11,5 @@ router.put('/update',Middleware.authenticate,upload.array('images'),PostValidati
 router.post('/search-post',PostValidation.validateSearchPost,PostValidation.validateSearchPost,PostController.searchPostController)
 router.put('/update-status/:postId',Middleware.authenticate,PostValidation.validateUpdateStatusPost,PostController.updateStatusPostController);
 router.put('/update-is-pinned/:postId',Middleware.authenticate,PostController.updateIsPinnedPostController);
+router.put('/update-extension-post',Middleware.authenticate,PostController.updatePostExtensionController);
 export default router;

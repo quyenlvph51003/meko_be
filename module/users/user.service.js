@@ -1,12 +1,31 @@
 
 import UserRepository from './user.repository.js';
 import bcrypt from 'bcrypt';
+import PaymenRepo from '../payments/repository/payment.repository.js';
+import PaymentPackageRepo from '../payment_packages/payment.packages.repository.js';
 function escapeRegex(text) {
     return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // escape regex special chars
   }
 class UserService{
     async createUser(user){
-        return await UserRepository.createUserRepo(user);
+        const result= await UserRepository.createUserRepo(user);
+        if (result) {
+            const resultPaymenPackage = await PaymentPackageRepo.getAll({ status: 0, is_active: 1 });
+            if (resultPaymenPackage.length > 0) {
+                for (const pkg of resultPaymenPackage) {
+                    const expiredAt = new Date(Date.now() + pkg.expired_at * 24 * 60 * 60 * 1000);
+                    await PaymenRepo.create({
+                        user_id: result.insertId,
+                        amount: 0,
+                        transaction_code: 'Meko_free',
+                        usage_remaining: pkg.usage_limit,
+                        expired_at: expiredAt,
+                        package_id:pkg.id
+                    });
+                   }
+                  }
+                }
+        return result;
     }
     async findByIdUser(id){
         return await UserRepository.findByIdUserRepo(id);

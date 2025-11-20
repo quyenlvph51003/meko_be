@@ -4,6 +4,7 @@ import ValidateUtils from '../../utils/validate_utils.js';
 const validatonCreatePost=(req,res,next)=>{
     // Kiểm tra field data
     console.log('cascsa ');
+    
     if(!req.body.data){
         return ResponseUtils.validationErrorResponse(res,'Dữ liệu không hợp lệ');
     }
@@ -16,7 +17,7 @@ const validatonCreatePost=(req,res,next)=>{
         return ResponseUtils.validationErrorResponse(res,'Dữ liệu không đúng định dạng JSON');
     }
     
-    const {title, description, categories, userId, wardCode, provinceCode, address, price, phoneNumber} = data;
+    const {title, description, categories, userId, wardCode, provinceCode, address, price, phoneNumber,paymentId} = data;
 
     if(!title){
         return ResponseUtils.validationErrorResponse(res,'Tiêu đề không được để trống');
@@ -24,7 +25,9 @@ const validatonCreatePost=(req,res,next)=>{
     if(!description){
         return ResponseUtils.validationErrorResponse(res,'Mô tả không được để trống');
     }
-    
+    if(!paymentId){
+        return ResponseUtils.validationErrorResponse(res,'Gói thanh toán không được để trống');
+    }
     // Kiểm tra file ảnh (req.files từ multer)
     if (!req.files || req.files.length === 0) {
         return ResponseUtils.validationErrorResponse(res, 'Vui lòng tải lên ít nhất 1 hình ảnh');

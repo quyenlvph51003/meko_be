@@ -1,7 +1,7 @@
 import ResponseUtils from "../../utils/response_utils.js";
 
 const createPaymentPackageValidation = (req, res, next) => {
-    const{name,price,description,durationDays,usageLimit}=req.body;
+    const{name,price,description,durationDays,usageLimit,expiredAt}=req.body;
     if(!name){
         return ResponseUtils.validationErrorResponse(res,'Thiếu tên gói');
     }
@@ -25,10 +25,31 @@ const createPaymentPackageValidation = (req, res, next) => {
     if(!Number.isInteger(Number(usageLimit))){
         return ResponseUtils.validationErrorResponse(res,'Giới hạn sử dụng gói phải là số nguyên');
     }
+    // const expiredDate = new Date(expiredAt);
+
+    // if (!expiredAt || isNaN(expiredDate.getTime())) {
+    //     return ResponseUtils.validationErrorResponse(res, 'Thời gian hết hạn không hợp lệ');
+    // }
+
+    // if (expiredDate <= new Date()) {
+    //     return ResponseUtils.validationErrorResponse(res, 'Thời gian hết hạn phải lớn hơn hiện tại');
+    // }
     next();
 }
 
 const updatePaymentPackageValidation = (req, res, next) => {
+    const { expiredAt } = req.body;
+    const expiredDate = new Date(expiredAt);
+
+    if(expiredAt){
+        if (!expiredAt || isNaN(expiredDate.getTime())) {
+            return ResponseUtils.validationErrorResponse(res, 'Thời gian hết hạn không hợp lệ');
+        }
+    
+        if (expiredDate <= new Date()) {
+            return ResponseUtils.validationErrorResponse(res, 'Thời gian hết hạn phải lớn hơn hiện tại');
+        }
+    }
     next();
 }
 

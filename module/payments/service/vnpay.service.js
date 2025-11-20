@@ -65,10 +65,11 @@ class VNPayService {
             await WalletLogsRepo.create({
                 user_id:userId,
                 amount:amount,
+                current_wallet_balance:wallet_balance,
             });
             return 'Thanh toán thành công';
         } else {
-            console.log('Thanh toasn thag bai');
+            console.log('Thanh toán thất bại');
             
         }
     }

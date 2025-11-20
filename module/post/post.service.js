@@ -10,6 +10,10 @@ import ValidateUtils from '../../utils/validate_utils.js';
 import Violation from '../category_violation/category.violation.repository.js';
 import PostHistoryRepo from "../post_history/post.history.repository.js";
 import PostFavorite from "../../module/post_favorite/favorite.repository.js";
+import PaymentRepo from "../payments/repository/payment.repository.js";
+import PaymenUsageRepository from '../payments/repository/paymen.usage.repository.js';
+
+
 class PostService{
     async createPost(post){
         const userId=post.userId;
@@ -18,7 +22,8 @@ class PostService{
         const phoneNumber=post.phoneNumber;
         const images=post.images;
         const categories=post.categories;
-
+        const paymentId=post.paymentId;
+        
         const user=await UserRepository.findByIdUserRepo(userId);
         if(!user){
             throw new Error('User not found');
@@ -33,9 +38,24 @@ class PostService{
         if(!ward){
             throw new Error('Ward not found');
         }
+        //check gói
+        const paymentExists = await PaymentRepo.findOne({id:paymentId,user_id:userId});
+        if(!paymentExists){
+            throw new Error('Payment Not Found');
+        }
+
+        if(paymentExists.usage_remaining<=0){
+            throw new Error('Bạn không còn lượt đăng bài');
+        }
+
+        if(paymentExists.expired_at<new Date()){
+            throw new Error('Gói đã hết hạn')
+        }
+
+        await PaymentRepo.update(paymentId,{usage_remaining:paymentExists.usage_remaining-1});
         
         const expired_at = new Date();
-        expired_at.setDate(expired_at.getDate() + 30);
+        expired_at.setDate(expired_at.getDate() + paymentExists.duration_used);
         const expiredAtFormatted = expired_at.toISOString().slice(0, 19).replace('T', ' ');
 
         // dữ liệu lưu vào db
@@ -48,10 +68,16 @@ class PostService{
             address:post.address,
             price:post.price,
             expired_at: expiredAtFormatted,
-            phone_number:phoneNumber
+            phone_number:phoneNumber,
         }
         const postResult=await PostRepository.createPostRepo(postSave);
         if(!postResult) return;
+        //thêm bảng payment_usage
+        await PaymenUsageRepository.create({
+            payment_id: paymentExists.id,
+            post_id:postResult.id,
+            used_at:expiredAtFormatted
+        })
 
         if (images && images.length > 0) {
             const imageValues = images.map((imageUrl) => ({
@@ -266,11 +292,11 @@ class PostService{
         
         const result= await PostRepository.searchPostRepo(searchText,wardCode,provinceCode,userPosterId,status,categoryIds,page,limit);
         await Promise.all(
-  result.content.map(async (item) => {
-    const postFavorite = await PostFavorite.getFavoriteExists(item.id, userId);
-    item.isFavorite = !!postFavorite;
-  })
-);
+            result.content.map(async (item) => {
+                const postFavorite = await PostFavorite.getFavoriteExists(item.id, userId);
+                item.isFavorite = !!postFavorite;
+            })
+        );
         return result;
     }
 
@@ -324,6 +350,58 @@ class PostService{
             is_pinned:!postExists.is_pinned
         }
         return await PostRepository.updateWhere({id:postId},post);
+    }
+
+    //gia hạn tin
+    async updatePostExtension(postId,paymentId,userId){
+        const post=await PostRepository.findById(postId);
+        if(!post){
+            throw new Error('Post not found');
+        }
+        if(post.status != 'EXPIRED'){
+            throw new Error('Bài viết chưa hết hạn');
+        }
+
+        const user=await UserRepository.findByIdUserRepo(userId);
+        if(!user){
+            throw new Error('User not found');
+        }
+       
+        //check gói
+        const paymentExists = await PaymentRepo.findOne({id:paymentId,user_id:userId});
+        if(!paymentExists){
+            throw new Error('Payment Not Found');
+        }
+
+        if(paymentExists.usage_remaining<=0){
+            throw new Error('Bạn không còn lượt đăng bài');
+        }
+
+        if(paymentExists.expired_at<new Date()){
+            throw new Error('Gói đã hết hạn')
+        }
+        if(post.user_id != userId){
+            throw new Error('Bạn không phải người đăng bài');
+        }
+        
+        const expired_at = new Date();
+        expired_at.setDate(expired_at.getDate() + paymentExists.duration_used);
+        const expiredAtFormatted = expired_at.toISOString().slice(0, 19).replace('T', ' ');
+        await PaymenUsageRepository.create({
+            payment_id: paymentExists.id,
+            post_id:postId,
+            used_at:expiredAtFormatted,
+            action_type:'EXTEND' // hết hạn
+        })
+        await PaymentRepo.update(paymentId,{usage_remaining:paymentExists.usage_remaining-1});
+
+        const updatePost=await PostRepository.update(postId,{
+            status:'APPROVED',
+            expired_at:expiredAtFormatted
+        });
+
+        return await PostRepository.findById(postId);
+    
     }
 }
 export default new PostService();

@@ -60,6 +60,15 @@ class PostRepository extends BaseService {
         return await this.updateWhere({id:postId},post);
     }
 
+    async getExpiredPosts() {
+        const sql = `
+            SELECT * FROM post
+            WHERE expired_at < NOW()
+        `;
+        const [rows] = await database.pool.query(sql);
+    return rows;
+}
+
 }
 
 export default new PostRepository();
