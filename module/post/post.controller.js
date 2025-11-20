@@ -1,6 +1,7 @@
 import PostService from './post.service.js';
 import ResponseUtils from '../../utils/response_utils.js';
 import { PostStatus } from '../../utils/enum.common.js';
+import postRepository from './post.repository.js';
 const createPostController=async(req,res,next)=>{
     try{
         console.log(req.body);
@@ -27,6 +28,15 @@ const createPostController=async(req,res,next)=>{
         }
         if(error.message==='Category not found'){
             return ResponseUtils.notFoundResponse(res,'Không tìm thấy danh mục sản phẩm');
+        }
+        if(error.message==='Payment Not Found'){
+            return ResponseUtils.notFoundResponse(res,'Không tìm thấy gói đăng bài của người dùng');
+        }
+        if(error.message==='Bạn không còn lượt đăng bài'){
+            return ResponseUtils.validationErrorResponse(res,'Bạn không còn lượt đăng bài');
+        }
+        if(error.message==='Gói đã hết hạn'){
+            return ResponseUtils.validationErrorResponse(res,'Gói đã hết hạn');
         }
         console.log(error);
         return ResponseUtils.serverErrorResponse(res);
@@ -228,6 +238,37 @@ const updateStatusPostController=async(req,res,next)=>{
             console.log(error);
             return ResponseUtils.serverErrorResponse(res);
         }
-    }
+}
 
-export default {createPostController,getDetailByPostIdController,updatePostByIdController,searchPostController,updateStatusPostController,updateIsPinnedPostController}
+const updatePostExtensionController = async(req,res,next)=>{
+    try{
+            const {postId,userId,paymentId}=req.query;
+            
+            const result=await PostService.updatePostExtension(postId,paymentId,userId);
+            return ResponseUtils.successResponse(res,result,'Gia hạn bài viết thành công'); 
+        }catch(error){
+            if(error.message==='User not found'){
+            return ResponseUtils.notFoundResponse(res,'Không tìm thấy người dùng');
+            }
+            if(error.message==='Payment Not Found'){
+                return ResponseUtils.notFoundResponse(res,'Không tìm thấy gói đăng bài của người dùng');
+            }
+            if(error.message==='Bạn không còn lượt đăng bài'){
+                return ResponseUtils.validationErrorResponse(res,'Bạn không còn lượt đăng bài');
+            }
+            if(error.message==='Gói đã hết hạn'){
+                return ResponseUtils.validationErrorResponse(res,'Gói đã hết hạn');
+            }
+            if(error.message==='Bài viết chưa hết hạn'){
+                return ResponseUtils.validationErrorResponse(res,'Bài viết chưa hết hạn');
+            }
+            if(error.message==='Bạn không phải người đăng bài'){
+                return ResponseUtils.validationErrorResponse(res,'Bạn không phải người đăng bài');
+            }
+        console.log(error);
+        return ResponseUtils.serverErrorResponse(res);
+        }
+}
+
+
+export default {createPostController,getDetailByPostIdController,updatePostExtensionController,updatePostByIdController,searchPostController,updateStatusPostController,updateIsPinnedPostController}

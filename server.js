@@ -37,8 +37,12 @@ import historyRoute from './module/post_history/post.history.router.js';
 import reviewRoute from './module/post_reviews/review.route.js';
 import paymentPackageRoute from './module/payment_packages/payment.packages.route.js';
 import paymentRoute from './module/payments/payment.route.js';
+
 ///web route
 import webRoute from './routes/web.routes.js';
+
+// Start background cron jobs (side-effect import)
+import './module/post/cron_job.js';
 
 testConnection.testConnection();
 

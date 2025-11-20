@@ -4,7 +4,8 @@ export const PostStatus = Object.freeze({
   APPROVED: 'APPROVED',   // đã duyệt
   REJECTED: 'REJECTED',   // từ chối
   VIOLATION: 'VIOLATION', // vi phạm
-  HIDDEN: 'HIDDEN'        // ẩn tin
+  HIDDEN: 'HIDDEN',        // ẩn tin
+  EXPIRED: 'EXPIRED' // hết hạn
 });
 
 

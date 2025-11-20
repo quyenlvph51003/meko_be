@@ -6,7 +6,9 @@ class PaymentPackagesService {
             price: paymentPackage.price,
             description: paymentPackage.description,
             duration_days: paymentPackage.durationDays,
-            usage_limit: paymentPackage.usageLimit
+            usage_limit: paymentPackage.usageLimit,
+            expired_at: paymentPackage.expiredAt,
+            status: paymentPackage.status
         });
     }
     async updatePaymentPackage(id,paymentPackage) {
@@ -20,7 +22,8 @@ class PaymentPackagesService {
             description: paymentPackage.description??paymentPackageExists.description,
             duration_days: paymentPackage.durationDays??paymentPackageExists.duration_days,
             usage_limit: paymentPackage.usageLimit??paymentPackageExists.usage_limit,
-            is_active: paymentPackage.isActive??paymentPackageExists.is_active
+            is_active: paymentPackage.isActive??paymentPackageExists.is_active,
+            status:paymentPackage.status??paymentPackageExists.status
         });
         if(result){
             return await PaymentPackagesRepository.findById(id);
@@ -37,6 +40,8 @@ class PaymentPackagesService {
         }
         return await PaymentPackagesRepository.getAll(conditions);
     }
+    
+
 }
 
 export default new PaymentPackagesService();

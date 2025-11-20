@@ -1,20 +1,36 @@
 import AuthRepository from './auth.repository.js';
 import bcrypt from 'bcrypt';
-import nodemailer from 'nodemailer';
+import PaymenRepo from '../payments/repository/payment.repository.js';
+import PaymentPackageRepo from '../payment_packages/payment.packages.repository.js';
 // import { Resend } from await import('resend'); // ✅ dynamic import
 // const resend = new Resend(process.env.RESEND_API_KEY);
 
 class AuthService{
     async register({email,password,username}){
-        
         const hashedPassword = await bcrypt.hash(password,10);
-
         const user={
             email,
             password:hashedPassword,
             username
         }
-        return await AuthRepository.createAuthRepo(user);
+        const result=await AuthRepository.createAuthRepo(user);
+        if (result) {
+            const resultPaymenPackage = await PaymentPackageRepo.getAll({ status: 0, is_active: 1 });
+            if (resultPaymenPackage.length > 0) {
+                for (const pkg of resultPaymenPackage) {
+                const expiredAt = new Date(Date.now() + pkg.expired_at * 24 * 60 * 60 * 1000);
+                await PaymenRepo.create({
+                    user_id: result.insertId,
+                    amount: 0,
+                    transaction_code: 'Meko_free',
+                    usage_remaining: pkg.usage_limit,
+                    expired_at: expiredAt,
+                    package_id:pkg.id
+                });
+                }
+            }
+        }
+        return result;
     };
     async login({email,password}){
         const user=await AuthRepository.findByEmailAuthRepo(email);
